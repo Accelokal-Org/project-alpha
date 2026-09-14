@@ -1,5 +1,5 @@
 import {describe,it,expect} from "vitest";
-import {setupSchema,testAccountSchema} from "@/features/admin/schema";
+import {setupSchema} from "@/features/admin/schema";
 import {isAppManager} from "@/lib/auth/permissions";
 const school_id="10000000-0000-4000-8000-000000000001";
 describe("admin form boundaries",()=>{
@@ -17,9 +17,7 @@ describe("admin form boundaries",()=>{
   }
   expect(setupSchema.safeParse({operation:"link_account",school_id,email:"a@example.test",role:"SCHOOL_HEAD",profile_id:""}).success).toBe(true);
  });
- it("restricts test login inputs and never includes passwords in setup payloads",()=>{
-  expect(testAccountSchema.safeParse({school_id,email:"teacher@real-school.com",password:"long-enough-password"}).success).toBe(false);
-  expect(testAccountSchema.safeParse({school_id,email:"teacher@example.test",password:"short"}).success).toBe(false);
+ it("never includes passwords in setup payloads",()=>{
   const result=setupSchema.parse({operation:"create_school",name:"Test",timezone:"UTC",password:"not-for-audit"});
   expect(result).not.toHaveProperty("password");
  });

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { LoginForm } from "@/components/login-form";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { brand } from "@/lib/brand";
@@ -14,10 +14,9 @@ export default function Login() {
   </section>
   <section className="flex items-center justify-center p-8 py-16"><div className="w-full max-w-sm">
    <p className="text-xs uppercase tracking-widest text-muted font-semibold mb-3">Welcome back</p><h2 className="text-2xl font-semibold mb-2">Sign in to your school</h2><p className="text-muted mb-8 leading-relaxed">Use the account provided by your school administrator.</p>
-   {!configured && <p className="border border-amber-200 bg-amber-50 rounded-md p-3 text-sm text-amber-900 mb-6">School sign-in is awaiting setup. The sample workspace is available to explore.</p>}
+   {!configured && <p className="border border-amber-200 bg-amber-50 rounded-md p-3 text-sm text-amber-900 mb-6">School sign-in is awaiting setup. Contact your school administrator.</p>}
    <LoginForm configured={configured} />
    <p className="text-xs text-muted mt-5">Need access or a password reset? Contact your school administrator.</p>
-   <div className="border-t border-border mt-8 pt-6"><Link href="/preview" className="flex items-center justify-between font-medium text-primary">Explore the sample workspace <ArrowRight size={17} /></Link><p className="text-xs text-muted mt-2">Fictional school data. No sign-in required.</p></div>
   </div></section>
  </main>;
 }

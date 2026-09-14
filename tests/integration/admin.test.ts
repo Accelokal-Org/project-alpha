@@ -29,15 +29,7 @@ describe("superadmin setup",()=>{
   const roles=await db.query("select * from public.school_memberships where user_id=$1",[admin]);
   expect(roles.rows).toHaveLength(0);
  });
- it("creates a complete isolated fictional school atomically",async()=>{
-  const result=await setup("create_test_school",{name:"Sandbox",timezone:"Asia/Manila"});
-  for(const [table,count] of [["classes",2],["teachers",2],["students",12],["subjects",2],["class_enrollments",12],["subject_enrollments",12]] as const){
-   const r=await db.query<{count:number}>(`select count(*)::integer as count from public.${table} where school_id=$1`,[result.school_id]);
-   expect(r.rows[0].count).toBe(count);
-  }
-  expect((await db.query<{is_test:boolean}>("select is_test from public.schools where id=$1",[result.school_id])).rows[0].is_test).toBe(true);
-  expect((await db.query("select * from public.admin_audit_log where school_id=$1 and action='create_test_school'",[result.school_id])).rows).toHaveLength(1);
- });
+
  it("denies teachers and students direct access to the setup RPC",async()=>{
   for(const uid of [student,teacher]) await expect(setup("create_school",{name:"Unauthorized",timezone:"UTC"},uid)).rejects.toThrow(/App manager/);
  });
@@ -101,11 +93,9 @@ describe("superadmin setup",()=>{
   expect((await actor(student,()=>db.query("select * from public.admin_audit_log"))).rows).toHaveLength(0);
   await expect(actor(admin,()=>db.query("delete from public.admin_audit_log"))).rejects.toThrow(/permission denied/);
  });
- it("audits test account creation only inside a test school",async()=>{
-  await expect(actor(admin,()=>db.query("select public.admin_record_test_account($1,$2)",[seedSchool,student]))).rejects.toThrow(/Invalid test account/);
-  const {school_id}=await setup("create_test_school",{name:"Account sandbox",timezone:"UTC"});
-  await actor(admin,()=>db.query("select public.admin_record_test_account($1,$2)",[school_id,student]));
-  expect((await db.query("select * from public.admin_audit_log where school_id=$1 and action='create_test_account'",[school_id])).rows).toHaveLength(1);
+
+ it("rejects retired sample-school creation",async()=>{
+  await expect(setup("create_test_school",{school_id:seedSchool,name:"Retired",timezone:"UTC"})).rejects.toThrow(/Unknown operation/);
  });
  it("rejects unknown operations",async()=>{
   await expect(setup("run_sql",{school_id:seedSchool,sql:"drop table public.students"})).rejects.toThrow(/Unknown operation/);

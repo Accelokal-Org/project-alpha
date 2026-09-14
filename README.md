@@ -14,11 +14,11 @@ Built with Next.js App Router, TypeScript, Tailwind and Supabase PostgreSQL/Auth
 
 ## Superadmin
 
-Open `/deskonekt/admin/login` for the separate superadmin sign-in. After the one-time Supabase connection and `npm run admin:bootstrap`, create schools, configure classes and accounts, and generate fictional test schools entirely through the admin UI. No manual school SQL is needed.
+Open `/deskonekt/admin/login` for the separate superadmin sign-in. After the one-time Supabase connection and `npm run admin:bootstrap`, create schools, configure classes and accounts through the admin UI. No manual school SQL is needed.
 
-See [superadmin setup and testing](docs/superadmin.md) for the complete first-login steps. Invitation emails and billing are planned for later.
+See [superadmin setup](docs/superadmin.md) for the complete first-login steps. Invitation emails and billing are planned for later.
 
-## Run the preview
+## Run the application
 
 Requires Node.js 22.13+ and npm.
 
@@ -27,7 +27,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000/preview. The preview is read-only and contains fictional records; it works without Supabase. Real workspace routes never fall back to demo data.
+Open http://localhost:3000/login. Configure Supabase and sign in with your school account. No sample workspace or automatic sample data is included.
 
 ## Connect local Supabase
 
@@ -39,25 +39,13 @@ npm run db:start
 npm run db:reset
 ```
 
-Copy the local API URL and publishable/anon key from `npx supabase status` into `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. For local fixture provisioning, also set `SUPABASE_SERVICE_ROLE_KEY` to the local service-role key and choose a `SEED_USER_PASSWORD` of at least 12 characters. Keep these in the ignored `.env.local` file.
+Copy the local API URL and public key from `npx supabase status` into `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Keep these in the ignored `.env.local` file. Bootstrap the first administrator using the admin guide, then add schools and connect accounts through the website.
 
-```sh
-npm run db:users
-npm run dev
-```
+`db:reset` rebuilds **local** data with an empty schema; automatic seeding is disabled. Do not reset a database containing records you need.
 
-`db:reset` rebuilds **local** data. The user provisioning script refuses non-local URLs. Existing fixture passwords are left unchanged.
+## Remove previously created sample data
 
-| Local account | Roles |
-| --- | --- |
-| andrea@example.test | Teacher, adviser of Acacia |
-| daniel@example.test | Teacher, adviser of Narra |
-| sofia@example.test | Student, own profile/class only |
-| miguel@example.test | Student, own profile/class only |
-| head@example.test | School head, school-wide roster read access |
-| manager@example.test | App manager, administrative roster read access |
-
-All names and school records are fictional. Public signup is disabled locally. Application roles are assigned in database memberships, not user-editable Auth metadata.
+Apply `supabase/migrations/202609140003_remove_sample_data.sql` to the same Supabase project used by the application. See [database cleanup](docs/sample-data-removal.md) for scope and deployment instructions. Deploying the website alone does not apply SQL migrations.
 
 ## Validate
 
@@ -70,7 +58,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Vitest executes the versioned migrations and seed in PGlite (embedded PostgreSQL) and verifies RLS and manager-only setup operations as the `authenticated`/`anon` roles. It does not require Docker. Supabase Auth and PostgREST still require a full live smoke test. Playwright covers the preview roster, admin sign-in page, and unauthenticated route protection; a separately opted-in live admin test is documented in the superadmin guide.
+Automated checks use isolated, in-memory PostgreSQL fixtures under `tests/fixtures/`; they do not populate the application database. Browser checks cover sign-in protection and removal of the preview. The live test-school creation script has been removed.
 
 `lib/supabase/database.types.ts` is an offline-generated schema snapshot. Table insert/update shapes are partial; request handlers use typed, validated setup RPCs instead of direct table writes. After starting local Supabase, run `npm run db:types` to replace it with full CLI-generated types and relationships before adding direct table mutations.
 

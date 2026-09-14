@@ -1,2 +1,4 @@
 import { defineConfig } from "@playwright/test";
-export default defineConfig({ testDir: "./tests/e2e", use: { baseURL: "http://127.0.0.1:3000" }, webServer: { command: "npm run dev -- --hostname 127.0.0.1", url: "http://127.0.0.1:3000/preview", reuseExistingServer: !process.env.CI }, projects: [{ name: "chromium", use: { browserName: "chromium" } }] });
+const port = process.env.PLAYWRIGHT_PORT || "3000";
+const baseURL = `http://127.0.0.1:${port}`;
+export default defineConfig({ testDir: "./tests/e2e", use: { baseURL }, webServer: { command: process.env.PLAYWRIGHT_PRODUCTION ? `npm run start -- --hostname 127.0.0.1 --port ${port}` : `npm run dev -- --hostname 127.0.0.1 --port ${port}`, url: `${baseURL}/login`, reuseExistingServer: !process.env.CI }, projects: [{ name: "chromium", use: { browserName: "chromium" } }] });

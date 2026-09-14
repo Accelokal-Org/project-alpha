@@ -1,6 +1,6 @@
 import { PGlite } from "@electric-sql/pglite";
 import { readFile, readdir } from "node:fs/promises";
-export async function createTestDatabase() {
+export async function createTestDatabase(beforeCleanup = false) {
   const db = new PGlite();
   // Supabase supplies these roles/schema; reproduce them to test real Postgres RLS locally.
   await db.exec(`create role anon; create role authenticated; create role service_role bypassrls;
@@ -11,8 +11,9 @@ export async function createTestDatabase() {
     grant execute on function auth.uid() to anon,authenticated,service_role;`);
   const directory = new URL("../../supabase/migrations/", import.meta.url);
   for (const name of (await readdir(directory)).filter(n => n.endsWith(".sql")).sort()) {
+    if (beforeCleanup && name.startsWith("202609140003")) continue;
     await db.exec(await readFile(new URL(name,directory), "utf8"));
   }
-  await db.exec(await readFile(new URL("../../supabase/seed.sql", import.meta.url), "utf8"));
+  await db.exec(await readFile(new URL("../fixtures/school.sql", import.meta.url), "utf8"));
   return db;
 }

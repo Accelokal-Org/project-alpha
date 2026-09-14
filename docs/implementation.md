@@ -4,13 +4,17 @@ Product identity: **Deskonekt — Your classes. Your work. One desk. — by Acce
 
 ## Scope
 
-Implemented the first recommended slice: authentication → teacher assignment → student roster. Includes an adviser’s whole-class roster and a minimal student landing page that returns only the authenticated student’s profile and class. The separate [superadmin area](superadmin.md) now supports school setup, account connections, fictional test schools, readiness checks and setup audit history. Dedicated school-head administration is still a later milestone.
+Implemented the first recommended slice: authentication → teacher assignment → student roster. Includes an adviser’s whole-class roster and a minimal student landing page that returns only the authenticated student’s profile and class. The separate [superadmin area](superadmin.md) now supports school setup, account connections, setup audit history. Dedicated school-head administration is still a later milestone.
 
-The visual preview is an independent public route using fictional fixtures. It is not a live school and has no record-writing actions. There is no demo role switcher, session bypass, or fallback to fixtures inside authenticated data queries.
+The application has no public preview or sample-data generation controls. Automated fixtures remain isolated under tests and do not seed the application database.
+
+## Teacher workspace
+
+The teacher landing page includes subject/advisory assignment totals and unique class-section counts. Teachers can search class names, subjects and codes, combine school/year/responsibility filters, and open authorized rosters. No new migration is required for this workspace iteration. Attendance, assessments and lesson plans remain subsequent slices.
 
 ## Architecture
 
-- Server Components query Supabase under the requesting user’s session. The sole elevated request handler is the isolated, authorized Auth provisioner for fictional test logins; it does not access academic tables with the service-role key.
+- Server Components query Supabase under the requesting user’s session.
 - Server Actions handle sign-in/sign-out. Zod validates sign-in on the server; HTML constraints validate the small client form. React Hook Form is deferred until a complex editing form exists.
 - Supabase SSR refreshes cookies through `proxy.ts`; protected data access also checks the Auth user and database memberships. This follows the [official Supabase SSR guidance](https://supabase.com/docs/guides/auth/server-side/creating-a-client) and [Next.js authentication guidance](https://nextjs.org/docs/app/guides/authentication).
 - Normalized school/year/grade/class/subject/teacher/student tables use UUIDs, foreign keys and tenant-aware composite foreign keys.
@@ -23,8 +27,8 @@ The visual preview is an independent public route using fictional fixtures. It i
 
 1. Create a separate development/staging Supabase project. Retain PostgreSQL as the source of truth.
 2. Disable open public signup unless an approved onboarding workflow is added. Run the one-time superadmin bootstrap, then use admin forms to create schools and connect existing login emails to school roles/profiles. Do not place roles in editable user metadata.
-3. Review the migration, link the intended project with the Supabase CLI and apply the versioned migration. Do not run the fictional development seed or local fixture-user script against production.
-4. Configure the app’s public Supabase URL and publishable key. A server-only service-role key is needed for initial operator bootstrap and optional fictional-test-login creation; it is not used for ordinary school data access.
+3. Review the migration, link the intended project with the Supabase CLI and apply the versioned migration. Automatic seeding is disabled.
+4. Configure the app’s public Supabase URL and publishable key. A server-only service-role key is needed for initial operator bootstrap; it is not used for ordinary school data access.
 5. Configure Auth site URLs for the chosen Vercel deployment. Configure password recovery/email delivery before real onboarding; the initial login directs account recovery to the school administrator.
 6. Run a full Auth/PostgREST integration check with two teachers, two students and two schools before using real records. Test each role and direct unauthorized queries, including revoked memberships.
 

@@ -5,7 +5,7 @@ import { requireAdmin } from "./access";
 export async function getAdminData(schoolId?:string) {
  const session=await requireAdmin(); const {client}=session;
  if(schoolId && !z.uuid().safeParse(schoolId).success) notFound();
- const schools=await client.from("schools").select("id,name,timezone,is_test").order("created_at",{ascending:false}).limit(200);
+ const schools=await client.from("schools").select("id,name,timezone").order("created_at",{ascending:false}).limit(200);
  if(schools.error) throw new Error("School list unavailable.");
  const selected=schoolId ? schools.data.find(s=>s.id===schoolId) : undefined;
  if(schoolId && !selected) notFound();

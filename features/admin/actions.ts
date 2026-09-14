@@ -24,7 +24,7 @@ export async function saveSetup(_state: AdminFormState, form: FormData): Promise
   return {error:messages[error.code] ?? "The change could not be saved. Please try again."};
  }
  revalidatePath("/deskonekt/admin"); revalidatePath("/teacher"); revalidatePath("/student");
- if (operation === "create_school" || operation === "create_test_school") {
+ if (operation === "create_school") {
   const result = resultSchema.safeParse(data);
   if (!result.success) return {error:"School saved, but the page could not be opened. Refresh the school list."};
   redirect(`/deskonekt/admin?school=${result.data.school_id}`);

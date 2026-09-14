@@ -8,7 +8,6 @@ const timezone = z.string().trim().min(1).max(100).refine(value => {
 const school = { school_id:id };
 export const setupSchema = z.discriminatedUnion("operation",[
  z.object({operation:z.literal("create_school"),name,timezone}),
- z.object({operation:z.literal("create_test_school"),name,timezone}),
  z.object({operation:z.literal("update_school"),...school,name,timezone}),
  z.object({operation:z.literal("create_year"),...school,name,starts_on:z.iso.date(),ends_on:z.iso.date(),is_active:z.boolean()}).refine(v=>v.ends_on>v.starts_on,{message:"The end date must be after the start date.",path:["ends_on"]}),
  z.object({operation:z.literal("create_grade"),...school,name}),
@@ -25,7 +24,6 @@ export const setupSchema = z.discriminatedUnion("operation",[
  z.object({operation:z.literal("link_account"),...school,email:z.email().max(254),role:z.enum(["TEACHER","ADVISER","STUDENT","SCHOOL_HEAD"]),profile_id:z.union([id,z.literal("")])})
   .refine(v => v.role==="SCHOOL_HEAD" || v.profile_id!=="", {message:"Choose the teacher or student profile to connect.",path:["profile_id"]}),
 ]);
-export const testAccountSchema = z.object({school_id:id,email:z.email().max(254).refine(v=>v.toLowerCase().endsWith("@example.test"),"Use an @example.test address for fictional test accounts."),password:z.string().min(12).max(128)});
 export type SetupInput = z.infer<typeof setupSchema>;
 export type SetupOperation = SetupInput["operation"];
 export type AdminFormState = { error?: string; success?: string };

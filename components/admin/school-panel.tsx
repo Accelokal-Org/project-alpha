@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { SetupForm, type FormField } from "./setup-form";
 import type { AdminData } from "@/features/admin/queries";
-import { TestAccountForm } from "./test-account-form";
 const nameField:FormField={name:"name",label:"Name"};
 const codeField:FormField={name:"code",label:"Code"};
 function Records({title,headers,rows}:{title:string;headers:string[];rows:React.ReactNode[][]}) {
  return <section className="border border-border rounded-lg overflow-hidden bg-white mt-5"><h2 className="font-semibold text-navy p-4 border-b border-border">{title}</h2><div className="overflow-auto max-h-[520px]"><table className="w-full"><caption className="sr-only">{title}</caption><thead className="sticky top-0"><tr>{headers.map(h=><th key={h}>{h}</th>)}</tr></thead><tbody>{rows.map((row,i)=><tr key={i}>{row.map((v,j)=><td key={j} className="text-sm">{v}</td>)}</tr>)}</tbody></table>{!rows.length&&<p className="p-6 text-sm text-muted">No records yet. Add the first record using the form above.</p>}</div></section>;
 }
-export function SchoolPanel({data:d,tab,canCreateTestAccounts}:{data:AdminData;tab:string;canCreateTestAccounts:boolean}) {
+export function SchoolPanel({data:d,tab}:{data:AdminData;tab:string}) {
  const s=d.selected!; const schoolId=s.id;
  const classOptions=d.classes.map(c=>({value:c.id,label:c.name}));
  const teacherOptions=d.teachers.map(t=>({value:t.id,label:`${t.display_name} · ${t.employee_code}`}));
@@ -57,26 +56,13 @@ export function SchoolPanel({data:d,tab,canCreateTestAccounts}:{data:AdminData;t
     {name:"email",label:"Account email",type:"email"},select("role","School role",[{value:"TEACHER",label:"Teacher"},{value:"ADVISER",label:"Adviser"},{value:"STUDENT",label:"Student"},{value:"SCHOOL_HEAD",label:"School head"}]),
     {...select("profile_id","Teacher or student profile",[...teacherOptions.map(o=>({...o,label:`Teacher: ${o.label}`})),...studentOptions.map(o=>({...o,label:`Student: ${o.label}`}))]),optional:true,hint:"Choose a profile matching the role. School heads do not need a profile."}
    ]} submit="Connect account" />
-   <section className="border border-border bg-white rounded-lg p-5"><h2 className="font-semibold text-navy">Create a test login</h2><p className="text-xs text-muted mt-1 mb-4">Create a fictional login, then connect it to a role and profile using the form alongside. Use a separate browser session to test that role.</p>{s.is_test ? <TestAccountForm schoolId={schoolId} enabled={canCreateTestAccounts} /> : <p className="text-sm text-muted">Test logins are available only for schools created with “Create test school”.</p>}</section>
   </div>
   <Records title="Connected school accounts" headers={["Email","Role"]} rows={d.accounts.map(a=>[a.email,a.role.replaceAll("_"," ")])} />
  </>;
  if(tab==="audit") return <Records title="Latest 30 setup changes" headers={["Time","Action","Actor","Record"]} rows={d.audit.map(a=>[new Intl.DateTimeFormat("en-PH",{timeZone:s.timezone,dateStyle:"medium",timeStyle:"short"}).format(new Date(a.created_at)),a.action.replaceAll("_"," "),a.actor_id===d.user.id?"You":a.actor_id,a.entity_id])} />;
- if(tab==="checks") {
-  const checks:[string,boolean,string][]=[
-   ["Superadmin account verified",true,"The server and database both require app-manager authority."],
-   ["School configuration available",true,`${s.name} · ${s.timezone}`],
-   ["Active school year",d.years.some(y=>y.is_active),"Add an active school year in Structure."],
-   ["Classes and subjects",d.classes.length>0&&d.offerings.length>0,"Add class subjects before assigning teachers."],
-   ["Subject teachers assigned",d.offerings.length>0&&d.offerings.every(o=>d.teacherAssignments.some(a=>a.offering_id===o.id)),"Each class subject should have an assigned teacher."],
-   ["Students enrolled in subjects",d.subjectEnrollments.length>0,"Class membership alone does not enroll a student in a subject."],
-   ["Teacher test access",d.accounts.some(a=>a.role==="TEACHER"),"Connect a teacher login, then verify its assigned roster."],
-   ["Student test access",d.accounts.some(a=>a.role==="STUDENT"),"Connect a student login, then verify only their profile and class are visible."],
-  ];
-  return <><Records title="Foundation readiness" headers={["Check","Status","Details"]} rows={checks.map(([title,ready,detail])=>[title,<span key={title} className={ready?"text-teal-800":"text-amber-800"}>{ready?"Ready":"Needs setup"}</span>,detail])} /><section className="bg-white border border-border p-5 mt-5 rounded-lg"><h2 className="font-semibold">Verify the actual user journey</h2><p className="text-sm text-muted mt-2">These checks inspect setup records; they do not impersonate users or claim that end-to-end tests have run. Open school sign-in in a separate browser profile or private window to test each account.</p><div className="flex gap-5 mt-4 text-sm text-primary"><Link href="/login" target="_blank" rel="noopener noreferrer">Open school sign-in ↗</Link><Link href="/teacher">Open staff workspace</Link></div></section></>;
- }
+
  return <>
-  <div className="grid lg:grid-cols-2 gap-4"><SetupForm operation="update_school" schoolId={schoolId} title="School settings" fields={[{...nameField,value:s.name},{name:"timezone",label:"Timezone",value:s.timezone}]} submit="Save school" /><section className="bg-white border border-border rounded-lg p-5"><h2 className="font-semibold text-navy">Set up this school</h2><ol className="list-decimal pl-5 space-y-3 text-sm text-muted mt-4"><li>Add school years, grade levels, and classes.</li><li>Add teachers, students, and subjects.</li><li>Assign teaching/advisory responsibilities and enroll students.</li><li>Connect login accounts and review the readiness checks.</li></ol><p className="mt-5 text-xs text-muted">{s.is_test?"Fictional test school. Use test accounts and sample records here.":"School workspace. Configuration is saved to Supabase."}</p></section></div>
+  <div className="grid lg:grid-cols-2 gap-4"><SetupForm operation="update_school" schoolId={schoolId} title="School settings" fields={[{...nameField,value:s.name},{name:"timezone",label:"Timezone",value:s.timezone}]} submit="Save school" /><section className="bg-white border border-border rounded-lg p-5"><h2 className="font-semibold text-navy">Set up this school</h2><ol className="list-decimal pl-5 space-y-3 text-sm text-muted mt-4"><li>Add school years, grade levels, and classes.</li><li>Add teachers, students, and subjects.</li><li>Assign teaching/advisory responsibilities and enroll students.</li><li>Connect login accounts to their school roles.</li></ol><p className="mt-5 text-xs text-muted">School workspace. Configuration is saved to Supabase.</p></section></div>
   <Records title="Current setup" headers={["Records","Count"]} rows={[["School years",d.years.length],["Classes",d.classes.length],["Teachers",d.teachers.length],["Students",d.students.length],["Subjects",d.subjects.length],["Connected role assignments",d.accounts.length]]} />
  </>;
 }
