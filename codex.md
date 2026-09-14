@@ -76,3 +76,8 @@
 - Multiple roles can be linked to the same Auth email through school Accounts. Teacher profiles and assignments remain necessary for personal teaching relationships.
 - No database migration required. Changes are local, not deployed. Webpack production build passed; TypeScript compiled successfully. Live multi-role Supabase sessions have not been exercised.
 - Validation for workspace-directed sign-in: 46 isolated unit/integration checks and 3 production-browser checks passed, including return URL preservation. Lint, standalone typecheck and whitespace checks passed.
+
+## Resend setup preparation (2026-09-14)
+- User requested Resend as email provider. `docs/email-provider.md` documents the verified Supabase SMTP configuration and domain/DNS prerequisites; README links to it.
+- Hosted SMTP is configured in Supabase, not Vercel. No SDK, unused API key variable, send endpoint, invitation UI or recovery flow added. No external provider changes or emails sent. Sending domain and requested email scope await user clarification.
+- Documentation-only preparation; verified settings against official Resend/Supabase documentation and checked whitespace.

@@ -63,3 +63,7 @@ Automated checks use isolated, in-memory PostgreSQL fixtures under `tests/fixtur
 `lib/supabase/database.types.ts` is an offline-generated schema snapshot. Table insert/update shapes are partial; request handlers use typed, validated setup RPCs instead of direct table writes. After starting local Supabase, run `npm run db:types` to replace it with full CLI-generated types and relationships before adding direct table mutations.
 
 See [setup and milestones](docs/implementation.md) and [the codebase map](codex.md).
+
+## Email delivery
+
+See [Resend email provider setup](docs/email-provider.md) for Supabase custom SMTP configuration and the remaining invitation/recovery workflow scope.
