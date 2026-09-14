@@ -12,6 +12,12 @@ The first vertical slice of the School Academic Records Platform described in **
 
 Built with Next.js App Router, TypeScript, Tailwind and Supabase PostgreSQL/Auth. This is an initial foundation, not the full MVP.
 
+## Superadmin
+
+Open `/deskonekt/admin/login` for the separate superadmin sign-in. After the one-time Supabase connection and `npm run admin:bootstrap`, create schools, configure classes and accounts, and generate fictional test schools entirely through the admin UI. No manual school SQL is needed.
+
+See [superadmin setup and testing](docs/superadmin.md) for the complete first-login steps. Invitation emails and billing are planned for later.
+
 ## Run the preview
 
 Requires Node.js 22.13+ and npm.
@@ -64,8 +70,8 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Vitest executes the real migration and seed in PGlite (embedded PostgreSQL) and verifies RLS as the `authenticated`/`anon` roles. It does not require Docker. Supabase Auth and PostgREST still require a full local Supabase smoke test. Playwright covers the preview roster and unauthenticated route protection.
+Vitest executes the versioned migrations and seed in PGlite (embedded PostgreSQL) and verifies RLS and manager-only setup operations as the `authenticated`/`anon` roles. It does not require Docker. Supabase Auth and PostgREST still require a full live smoke test. Playwright covers the preview roster, admin sign-in page, and unauthenticated route protection; a separately opted-in live admin test is documented in the superadmin guide.
 
-`lib/supabase/database.types.ts` is an offline-generated initial schema snapshot. Its write shapes are deliberately permissive because this slice has no application database mutations. After starting local Supabase, run `npm run db:types` to replace it with full CLI-generated types and relationships before adding mutations.
+`lib/supabase/database.types.ts` is an offline-generated schema snapshot. Table insert/update shapes are partial; request handlers use typed, validated setup RPCs instead of direct table writes. After starting local Supabase, run `npm run db:types` to replace it with full CLI-generated types and relationships before adding direct table mutations.
 
 See [setup and milestones](docs/implementation.md) and [the codebase map](codex.md).
