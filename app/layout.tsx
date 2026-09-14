@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import { Source_Sans_3, Merriweather } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
-const sans=Source_Sans_3({variable:"--font-sans",subsets:["latin"]});
-const serif=Merriweather({variable:"--font-serif",weight:["700"],subsets:["latin"]});
-export const metadata:Metadata={title:"EduArchive — School Records & Student Management",description:"A unified school workflow for learner records, grades, attendance, planning and reports.",icons:{icon:"/favicon.svg"}};
-export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="en" suppressHydrationWarning><body className={`${sans.variable} ${serif.variable}`}><ThemeProvider>{children}<Toaster/></ThemeProvider></body></html>}
+export const metadata: Metadata = { title: { default: "EduArchive · School records", template: "%s · EduArchive" }, description: "A teacher-first workspace for school academic records.", robots: { index: false, follow: false } };
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+ return <html lang="en"><body>{children}</body></html>;
+}
