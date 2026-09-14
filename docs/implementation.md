@@ -1,5 +1,7 @@
 # Foundation implementation
 
+Product identity: **Deskonekt — Your classes. Your work. One desk. — by Accelokal**. See the [product and design bible](product-design-bible.md) for positioning and brand usage.
+
 ## Scope
 
 Implemented the first recommended slice: authentication → teacher assignment → student roster. Includes an adviser’s whole-class roster and a minimal student landing page that returns only the authenticated student’s profile and class. School heads and app managers can read their authorized roster scope; dedicated administration interfaces are not built yet.

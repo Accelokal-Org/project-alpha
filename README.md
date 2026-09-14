@@ -1,4 +1,12 @@
-# EduArchive · Project Alpha
+# Deskonekt
+
+**Your classes. Your work. One desk.**
+
+by Accelokal
+
+Deskonekt is a seamless academic workspace built around the teacher. It connects classes, schedules, lesson plans, attendance, assessments, scores, grades, and academic workflows in one practical workspace.
+
+The product direction and brand usage are documented in the [product and design bible](docs/product-design-bible.md). The repository’s internal project identifier remains `project-alpha`.
 
 The first vertical slice of the School Academic Records Platform described in **MVP Specs.pdf**: sign in, resolve school roles, open an authorized teaching/advisory assignment, and view its student roster.
 

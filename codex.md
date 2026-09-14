@@ -1,4 +1,4 @@
-# Project Alpha — codebase map
+# Deskonekt / Project Alpha — codebase map
 
 ## Source and scope
 - Product reference: `/Users/jeansmac/Downloads/MVP Specs.pdf` (106 pages), reviewed 2026-09-14.
@@ -7,6 +7,7 @@
 - The working tree initially contained only `.git`; all previously tracked application files were already deleted. Preserve that starting state, do not restore the old wireframe or hosting configuration.
 
 ## Architecture decisions
+- Product brand: **Deskonekt**. Exact tagline: **Your classes. Your work. One desk.** Attribution: **by Accelokal**. User-approved positioning and design guidance live in `docs/product-design-bible.md`; shared application strings live in `lib/brand.ts`.
 - Next.js App Router, strict TypeScript, React Server Components, Tailwind, small shadcn-style primitives.
 - Supabase PostgreSQL and Auth, official SSR client; no Drizzle, Prisma, JSON persistence, or browser academic-record storage.
 - Centralized application permissions plus PostgreSQL RLS, with tenant and assignment boundaries. Students never receive staff rosters or internal academic information.
@@ -25,6 +26,8 @@
 - `scripts/`: local-only fixture-user provisioning.
 - `tests/`: permissions, RLS/tenant isolation, public/protected route checks.
 - `docs/`: implementation scope, local setup and next milestones.
+- `docs/product-design-bible.md`: approved name, tagline, brand hierarchy, positioning, name meaning and design principles.
+- `lib/brand.ts`: shared name, exact tagline, attribution and positioning; used by login, application header and metadata.
 - `proxy.ts`: Supabase session refresh; protected data access separately verifies identity.
 - `AGENTS.md`, `CLAUDE.md`: project instructions plus the Next.js-generated documentation reminder.
 
@@ -37,6 +40,7 @@
 - Protected layout is explicitly dynamic; there is no cached public rendering of user records.
 
 ## Setup and validation (2026-09-14)
+- Deskonekt brand integration: updated sign-in, workspace header, browser metadata, README and product/design bible; removed the previous placeholder name and copy. Typecheck, lint and production build passed. Brand-only changes did not require new behavioral tests.
 - User requested preparation for a **new Supabase project**. No remote project, credentials, or deployment was created.
 - `npm run dev` starts the app. The retained preview server uses `http://127.0.0.1:3000/preview`.
 - Full setup instructions and fixture accounts are in `README.md`. Docker is not installed in this environment, so live Supabase Auth/PostgREST verification remains outstanding.
@@ -50,6 +54,7 @@
 - Deferred work and limitations are in `docs/implementation.md`, especially manual setup UI, full live Auth checks, server pagination above 1,000 rows, and future audited academic mutations.
 
 ## Guardrails
+- Use Deskonekt for product-facing names. Keep `project-alpha` as the internal repository/infrastructure identifier. Brand positioning describes the full vision; do not imply unbuilt features are available.
 - Never commit secrets or real student data. Do not use a service-role key in request handling.
 - Roles come from database memberships, never editable user metadata.
 - Class enrollment and subject enrollment are separate. Teachers receive only students enrolled in their assigned subjects; advisers receive their advised class roster.

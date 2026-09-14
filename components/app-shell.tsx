@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BookOpen, LayoutDashboard, Users, ChevronDown, ArrowUpRight, LogOut, ShieldCheck } from "lucide-react";
 import { logout } from "@/app/login/actions";
+import { brand } from "@/lib/brand";
 export function AppShell({ children, preview = false, active = "workspace", name = "School account", student = false }: {
  children: React.ReactNode; preview?: boolean; active?: "workspace" | "classes"; name?: string; student?: boolean;
 }) {
@@ -8,8 +9,8 @@ export function AppShell({ children, preview = false, active = "workspace", name
  return <div className="min-h-screen">
   <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:bg-white focus:p-3">Skip to workspace</a>
   <header className="h-16 bg-white border-b border-border flex items-center justify-between px-5 lg:px-7 gap-4">
-   <Link href={base} className="flex items-center gap-2.5 text-navy font-semibold text-xl tracking-tight"><BookOpen size={24} className="text-primary" />EduArchive</Link>
-   <div className="flex items-center gap-4"><span className="hidden sm:flex items-center gap-2 text-xs text-muted"><ShieldCheck size={15} /> {preview ? "Sample school" : "School workspace"}</span><div className="h-7 border-l border-border" /><span className="h-8 w-8 bg-[#ece7fa] rounded-full flex items-center justify-center text-primary font-semibold text-xs">{preview ? "AR" : "EA"}</span><span className="hidden md:block text-sm">{name}</span></div>
+   <Link href={base} className="flex items-center gap-2.5 text-navy font-semibold text-xl tracking-tight"><BookOpen size={24} className="text-primary" aria-hidden="true" /><span className="flex flex-col leading-tight">{brand.name}<span className="text-[10px] font-normal tracking-normal text-muted mt-0.5">{brand.byline}</span></span></Link>
+   <div className="flex items-center gap-4"><span className="hidden sm:flex items-center gap-2 text-xs text-muted"><ShieldCheck size={15} /> {preview ? "Sample school" : "School workspace"}</span><div className="h-7 border-l border-border" /><span className="h-8 w-8 bg-[#ece7fa] rounded-full flex items-center justify-center text-primary font-semibold text-xs">{name.split(/\s+/).map(part => part[0]).slice(0,2).join("").toUpperCase()}</span><span className="hidden md:block text-sm">{name}</span></div>
   </header>
   <div className="md:grid md:grid-cols-[218px_minmax(0,1fr)] min-h-[calc(100vh-64px)]">
    <aside className="bg-white border-b md:border-b-0 md:border-r border-border flex flex-col">
