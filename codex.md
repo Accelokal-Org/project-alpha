@@ -66,3 +66,13 @@
 - Never commit secrets or real student data. Ordinary authenticated table writes remain disabled; setup mutations are operation-specific manager-checked atomic RPCs.
 - School lists currently cap at 200 and query responses at Supabase's 1,000-row limit; add server pagination before larger deployments.
 - Edit/removal/revocation UI beyond existing school settings/adviser assignment remains deferred.
+
+## Workspace-directed sign-in (2026-09-14)
+- School sign-in no longer queries the highest role or redirects superadmins into administration. `/login` offers teacher/student destinations; dedicated admin sign-in retains its manager check and admin destination.
+- `lib/auth/destination.ts` allowlists implemented school return paths. Server Action revalidates the return target; external/admin/arbitrary destinations are rejected.
+- `proxy.ts` preserves unauthenticated school URLs in `next`, including class IDs/query strings, while retaining refreshed cookies and no-store headers. Page/data-layer session and permission checks still apply independently.
+- Removed teacher-query redirects into the student portal; unauthorized teacher routes now use notFound without changing workspace. Student pages retain their access-not-assigned state.
+- Administration links to `/teacher`; the teacher landing shell offers an administration link only to platform admins. Workspace selection does not change authority or simulate a lower role. Existing admin/school-head roster scope is preserved.
+- Multiple roles can be linked to the same Auth email through school Accounts. Teacher profiles and assignments remain necessary for personal teaching relationships.
+- No database migration required. Changes are local, not deployed. Webpack production build passed; TypeScript compiled successfully. Live multi-role Supabase sessions have not been exercised.
+- Validation for workspace-directed sign-in: 46 isolated unit/integration checks and 3 production-browser checks passed, including return URL preservation. Lint, standalone typecheck and whitespace checks passed.

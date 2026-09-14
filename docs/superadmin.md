@@ -51,3 +51,9 @@ The preview, sample-school generator, sample-login provisioner and testing tab h
 - Scoring, attendance, scheduling, lesson planning and grade/report-card workflows remain future application milestones. They cannot yet be exercised from admin.
 
 Implementation references: [Supabase Auth admin createUser](https://supabase.com/docs/reference/javascript/auth-admin-createuser), [Next.js authentication](https://nextjs.org/docs/app/guides/authentication).
+
+## Choosing the teacher workspace
+
+Open `/teacher` directly, or choose **Open teacher workspace** in administration. If you need to sign in, the school login returns you to the requested teacher page. A direct visit to `/login` offers Teacher workspace and Student portal. Dedicated admin sign-in still opens administration and checks platform authority.
+
+An account can retain multiple roles: connect its existing email to a teacher profile using the school's Accounts tab, then assign its subjects/classes. Add Adviser separately when applicable. This does not remove School head or platform administrator access. The workspace choice controls navigation, not permissions; administrators and school heads retain their existing broader roster access. There is no impersonation or restricted teacher-role simulation.

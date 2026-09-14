@@ -9,5 +9,7 @@ test("school workspaces require authentication", async ({ page }) => {
  for (const path of ["/teacher", "/student"]) {
   await page.goto(path);
   await expect(page).toHaveURL(/\/login/);
+  expect(new URL(page.url()).searchParams.get("next")).toBe(path);
+  await expect(page.locator('input[name="next"]')).toHaveValue(path);
  }
 });

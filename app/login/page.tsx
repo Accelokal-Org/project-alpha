@@ -4,7 +4,9 @@ import { ShieldCheck } from "lucide-react";
 import { LoginForm } from "@/components/login-form";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { brand } from "@/lib/brand";
-export default function Login() {
+import { schoolDestination } from "@/lib/auth/destination";
+export default async function Login({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
+ const destination = schoolDestination((await searchParams).next);
  const configured = isSupabaseConfigured();
  return <main className="min-h-screen grid lg:grid-cols-[1fr_1.15fr]">
   <section className="bg-navy text-white px-8 py-12 lg:p-16 flex flex-col justify-between gap-16">
@@ -15,7 +17,7 @@ export default function Login() {
   <section className="flex items-center justify-center p-8 py-16"><div className="w-full max-w-sm">
    <p className="text-xs uppercase tracking-widest text-muted font-semibold mb-3">Welcome back</p><h2 className="text-2xl font-semibold mb-2">Sign in to your school</h2><p className="text-muted mb-8 leading-relaxed">Use the account provided by your school administrator.</p>
    {!configured && <p className="border border-amber-200 bg-amber-50 rounded-md p-3 text-sm text-amber-900 mb-6">School sign-in is awaiting setup. Contact your school administrator.</p>}
-   <LoginForm configured={configured} />
+   <LoginForm configured={configured} destination={destination} />
    <p className="text-xs text-muted mt-5">Need access or a password reset? Contact your school administrator.</p>
   </div></section>
  </main>;

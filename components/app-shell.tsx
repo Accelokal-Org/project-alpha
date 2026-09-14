@@ -3,8 +3,8 @@ import Image from "next/image";
 import { LayoutDashboard, Users, ChevronDown, LogOut, ShieldCheck } from "lucide-react";
 import { logout } from "@/app/login/actions";
 import { brand } from "@/lib/brand";
-export function AppShell({ children, active = "workspace", name = "School account", student = false }: {
- children: React.ReactNode; active?: "workspace" | "classes"; name?: string; student?: boolean;
+export function AppShell({ children, active = "workspace", name = "School account", student = false, adminAccess = false }: {
+ children: React.ReactNode; active?: "workspace" | "classes"; name?: string; student?: boolean; adminAccess?: boolean;
 }) {
  const base = student ? "/student" : "/teacher";
  return <div className="min-h-screen">
@@ -19,6 +19,7 @@ export function AppShell({ children, active = "workspace", name = "School accoun
     <nav aria-label="Main navigation" className="flex md:block p-3 md:pt-0 gap-2 space-y-0 md:space-y-1">
      <Link href={base} aria-current={active === "workspace" ? "page" : undefined} className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm ${active === "workspace" ? "bg-[#f0ebff] text-primary font-semibold" : "text-muted hover:bg-slate-50"}`}><LayoutDashboard size={17} />{student ? "My school" : "My workspace"}</Link>
      {!student && <Link href={`${base}?view=classes`} aria-current={active === "classes" ? "page" : undefined} className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm ${active === "classes" ? "bg-[#f0ebff] text-primary font-semibold" : "text-muted hover:bg-slate-50"}`}><Users size={17} />My classes</Link>}
+    {adminAccess && <Link href="/deskonekt/admin" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-muted hover:bg-slate-50"><ShieldCheck size={17} />Administration</Link>}
     </nav>
     <div className="hidden md:block mt-auto p-5 border-t border-border"><p className="text-[11px] uppercase tracking-wider text-muted mb-2">Signed-in account</p><form action={logout}><button className="flex items-center gap-2 text-sm text-muted"><LogOut size={15} /> Sign out</button></form></div>
    </aside>

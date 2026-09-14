@@ -3,7 +3,7 @@ const mocks=vi.hoisted(()=>({signIn:vi.fn(),signOut:vi.fn(),rpc:vi.fn(),configur
 vi.mock("@/lib/supabase/server",()=>({createClient:async()=>({auth:{signInWithPassword:mocks.signIn,signOut:mocks.signOut},rpc:mocks.rpc})}));
 vi.mock("@/lib/supabase/env",()=>({isSupabaseConfigured:mocks.configured}));
 vi.mock("next/navigation",()=>({redirect:(path:string)=>{throw new Error(`REDIRECT:${path}`);}}));
-import {loginAdmin} from "@/app/login/actions";
+import {login,loginAdmin} from "@/app/login/actions";
 function credentials(){const form=new FormData();form.set("email","admin@example.test");form.set("password","a-long-test-password");return form;}
 beforeEach(()=>{vi.clearAllMocks();mocks.configured.mockReturnValue(true);mocks.signIn.mockResolvedValue({error:null});mocks.signOut.mockResolvedValue({error:null});});
 describe("superadmin sign-in",()=>{
@@ -26,5 +26,27 @@ describe("superadmin sign-in",()=>{
   mocks.signIn.mockResolvedValue({error:{message:"internal provider details"}});
   const result=await loginAdmin({error:""},credentials());
   expect(result.error).toContain("Unable to sign in");expect(result.error).not.toContain("internal provider details");expect(mocks.rpc).not.toHaveBeenCalled();
+ });
+});
+
+describe("workspace-directed school sign-in",()=>{
+ it("opens teacher view without redirecting a superadmin to administration",async()=>{
+  mocks.rpc.mockResolvedValue({data:true,error:null});
+  await expect(login({error:""},credentials())).rejects.toThrow("REDIRECT:/teacher");
+  expect(mocks.rpc).not.toHaveBeenCalled();
+ });
+ it("honors the selected student workspace without choosing a role",async()=>{
+  const form=credentials();form.set("workspace","student");
+  await expect(login({error:""},form)).rejects.toThrow("REDIRECT:/student");
+ });
+ it("returns to the requested class and preserves its query",async()=>{
+  const form=credentials();const path="/teacher/classes/70000000-0000-4000-8000-000000000001?view=roster";form.set("next",path);
+  await expect(login({error:""},form)).rejects.toThrow(`REDIRECT:${path}`);
+ });
+ it("does not accept external or admin redirect targets through school sign-in",async()=>{
+  for(const next of ["https://evil.example", "//evil.example", "/deskonekt/admin", "/teacher/../../deskonekt/admin", "/teacher\\evil.example"]){
+   const form=credentials();form.set("next",next);
+   await expect(login({error:""},form)).rejects.toThrow("REDIRECT:/teacher");
+  }
  });
 });

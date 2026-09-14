@@ -1,5 +1,5 @@
 import "server-only";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { z } from "zod";
 import { requireSession } from "@/lib/auth/session";
 import { canReadClassRoster, hasPermission, isStaff } from "@/lib/auth/permissions";
@@ -7,7 +7,7 @@ import type { Assignment, RosterStudent } from "./types";
 
 export async function getAssignments(): Promise<Assignment[]> {
  const { client, memberships, user } = await requireSession();
- if (!isStaff(memberships)) redirect("/student");
+ if (!isStaff(memberships)) notFound();
  // Every query runs under the caller's JWT. RLS restricts all joins independently.
  const [offerings, classes, subjects, schools, years, teachers] = await Promise.all([
   client.rpc("staff_offerings"),
@@ -41,7 +41,7 @@ export async function getAssignments(): Promise<Assignment[]> {
 export async function getAssignmentRoster(id: string): Promise<{ assignment: Assignment; students: RosterStudent[] }> {
  // Authenticate before resolving IDs, including malformed inputs.
  const { client, memberships } = await requireSession();
- if (!isStaff(memberships)) redirect("/student");
+ if (!isStaff(memberships)) notFound();
  if (!z.uuid().safeParse(id.replace(/^advisory-/, "")).success) notFound();
  const assignments = await getAssignments();
  const assignment = assignments.find(a => a.id === id);
