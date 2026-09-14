@@ -13,3 +13,15 @@ test("school workspaces require authentication", async ({ page }) => {
   await expect(page.locator('input[name="next"]')).toHaveValue(path);
  }
 });
+
+test("account setup requires an invitation or authenticated session",async({page})=>{
+ await page.goto("/auth/accept");
+ await expect(page.getByText("Open the setup link from your invitation email.",{exact:false})).toBeVisible();
+ await expect(page.getByRole("button",{name:"Accept invitation"})).toHaveCount(0);
+ await page.goto("/auth/accept?token_hash=unverified-token");
+ await expect(page.getByRole("button",{name:"Accept invitation"})).toBeVisible();
+ await expect(page).toHaveURL(/\/auth\/accept/);
+ await page.goto("/auth/setup");
+ await expect(page.getByRole("heading",{name:"Open your invitation"})).toBeVisible();
+ await expect(page.getByLabel("Choose a password")).toHaveCount(0);
+});

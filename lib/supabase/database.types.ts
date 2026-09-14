@@ -96,5 +96,6 @@ display_name: string;
 staff_offerings: { Args: Record<never, never>; Returns: Database["public"]["Tables"]["subject_offerings"]["Row"][] };
 is_app_manager: { Args: Record<never, never>; Returns: boolean };
 admin_setup: { Args: { operation: string; payload: Json }; Returns: Json };
+admin_invite_access: { Args: { target_school: string; account_email: string; account_roles: SchoolRole[]; profile?: string; invited_user?: string }; Returns: undefined };
 admin_accounts: { Args: { target_school: string }; Returns: { user_id: string; email: string; role: SchoolRole }[] };
 }; Enums: { school_role: SchoolRole }; CompositeTypes: Record<never, never> } };

@@ -13,7 +13,7 @@
 - Supabase PostgreSQL/Auth and official SSR client. No browser academic-record storage, JSON persistence, Prisma or Drizzle.
 - Roles come from database memberships, never editable user metadata. RLS and server access checks enforce tenant/assignment boundaries.
 - Platform administrators use `platform_admins`, with compatibility for APP_MANAGER memberships. Hidden routes are not a security boundary.
-- Runtime school queries and setup writes use the requesting user's JWT. Service-role credentials are only used by the operator bootstrap script; no elevated test-login request handler remains.
+- Runtime school queries and setup writes use the requesting user's JWT. Service-role credentials are used by the operator bootstrap script and manager-authorized Auth invitation delivery. No elevated test-login handler remains.
 - Class and subject enrollment are independent. Teachers see their assigned subject rosters; advisers see their advised class; students see only their own profile/class.
 - Light, compact, table-first UI: navy #07124A, purple #6133E8, teal #11B8C7.
 
@@ -61,7 +61,7 @@
 
 ## Scope and guardrails
 - Implemented: authentication, teacher/advisory assignments and rosters, student landing, school/admin setup, account linking, setup audit.
-- Deferred: assessments/scores/publication, attendance, lesson plans, schedules, grading, interventions, report-card workflows; invitation emails and billing explicitly reserved for later.
+- Deferred: assessments/scores/publication, attendance, lesson plans, schedules, grading, interventions, report-card workflows; billing and password recovery remain reserved for later; invitations are now implemented.
 - Do not implement LMS, messaging, native AI, imports, attendance scanning or report-card designer.
 - Never commit secrets or real student data. Ordinary authenticated table writes remain disabled; setup mutations are operation-specific manager-checked atomic RPCs.
 - School lists currently cap at 200 and query responses at Supabase's 1,000-row limit; add server pagination before larger deployments.
@@ -81,3 +81,15 @@
 - User requested Resend as email provider. `docs/email-provider.md` documents the verified Supabase SMTP configuration and domain/DNS prerequisites; README links to it.
 - Hosted SMTP is configured in Supabase, not Vercel. No SDK, unused API key variable, send endpoint, invitation UI or recovery flow added. No external provider changes or emails sent. Sending domain and requested email scope await user clarification.
 - Documentation-only preparation; verified settings against official Resend/Supabase documentation and checked whitespace.
+
+## Account invitations (2026-09-14)
+- User authorized superadmin account creation with immediate school role assignment and email prompting password setup. Domain deskonekt.com is managed through Vercel; user reports Resend setup complete, not independently verified here.
+- `features/admin/invitations.ts` checks requireAdmin and schema, calls caller-JWT preflight, invokes isolated service-role Auth inviteUserByEmail, then caller-JWT atomic role assignment. No service-role school queries/writes. Partial send/link failure is surfaced explicitly; never delete existing/new Auth accounts automatically.
+- `features/admin/invitation-schema.ts`, `components/admin/invitation-form.tsx`: school invitation with multiple staff roles and one corresponding unlinked profile; Student is exclusive, APP_MANAGER cannot be invited via school form. Existing accounts use existing Connect account UI.
+- Migration `202609140004_account_invitations.sql`: admin_invite_access preflight and transactional multi-role grants/audit. Checks tenant, user/email match, roles and profile linking under a fresh manager check. No invitation data in editable user metadata.
+- `/auth/accept`: token-hash landing with explicit POST confirmation via verifyOtp(type invite), so GET does not consume links. `/auth/setup`: verified user password update and workspace choice. `app/auth/actions.ts` validates confirmation/password/session; `components/account-setup-form.tsx` shows pending/errors. Proxy refreshes /auth cookies; auth layout is dynamic, noindex and no-referrer.
+- `supabase/templates/invite.html`: hosted Supabase Invite user template using RedirectTo + token_hash. Requires manual installation in hosted email settings. Default ConfirmationURL links are not the implemented flow.
+- `APP_URL=https://deskonekt.com`, service-role key, public Supabase settings, redirect allowlist and Resend SMTP required. Setup documented in `docs/account-invitations.md`. No external settings changed, no live emails sent, no hosted migration applied.
+- SMTP delivery and role linking are separate operations; preflight prevents known failures, final RPC is atomic, partial failure requires connecting the existing account. No reissue UI or self-service recovery yet. Delivery acceptance does not prove inbox receipt.
+- Validation: 56 isolated unit/integration checks passed (invitation authorization, role validation, multi-role assignment, partial failures, token/password handling); 4 production-browser checks passed including invitation landing/session protection. Typecheck, lint, Webpack production build and whitespace checks passed. Hosted Auth/SMTP delivery remains unverified.
+- Offline type-generator RPC declarations updated for admin_invite_access and retired sample RPC removed.

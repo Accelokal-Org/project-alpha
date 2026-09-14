@@ -1,0 +1,11 @@
+import {beforeEach,it,expect,vi} from "vitest";
+const m=vi.hoisted(()=>({verify:vi.fn(),getUser:vi.fn(),update:vi.fn()}));
+vi.mock("@/lib/supabase/server",()=>({createClient:async()=>({auth:{verifyOtp:m.verify,getUser:m.getUser,updateUser:m.update}})}));
+vi.mock("next/navigation",()=>({redirect:(path:string)=>{throw new Error(`REDIRECT:${path}`);}}));
+vi.mock("@/lib/supabase/env",()=>({isSupabaseConfigured:()=>true}));
+import {acceptInvitation,setAccountPassword} from "@/app/auth/actions";
+beforeEach(()=>{vi.clearAllMocks();m.getUser.mockResolvedValue({data:{user:{id:"u"}},error:null});m.update.mockResolvedValue({error:null});});
+it("verifies only invitation tokens before setting the session",async()=>{m.verify.mockResolvedValue({error:null});const f=new FormData();f.set("token_hash","hash");await expect(acceptInvitation({},f)).rejects.toThrow("REDIRECT:/auth/setup");expect(m.verify).toHaveBeenCalledWith({token_hash:"hash",type:"invite"});});
+it("handles expired links without updating passwords",async()=>{m.verify.mockResolvedValue({error:{}});const f=new FormData();f.set("token_hash","old");expect((await acceptInvitation({},f)).error).toContain("expired");expect(m.update).not.toHaveBeenCalled();});
+it("requires a matching strong password and authenticated user",async()=>{const f=new FormData();f.set("password","strong-password-123");f.set("confirm","different");expect((await setAccountPassword({},f)).error).toContain("match");f.set("confirm","strong-password-123");m.getUser.mockResolvedValue({data:{user:null},error:{}});expect((await setAccountPassword({},f)).error).toContain("expired");expect(m.update).not.toHaveBeenCalled();});
+it("saves a password for the verified user and offers workspace choice",async()=>{const f=new FormData();f.set("password","strong-password-123");f.set("confirm","strong-password-123");await expect(setAccountPassword({},f)).rejects.toThrow("REDIRECT:/auth/setup?complete=1");expect(m.update).toHaveBeenCalledWith({password:"strong-password-123"});});

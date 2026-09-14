@@ -30,7 +30,7 @@ staff_offerings: { Args: Record<never, never>; Returns: Database["public"]["Tabl
 is_app_manager: { Args: Record<never, never>; Returns: boolean };
 admin_setup: { Args: { operation: string; payload: Json }; Returns: Json };
 admin_accounts: { Args: { target_school: string }; Returns: { user_id: string; email: string; role: SchoolRole }[] };
-admin_record_test_account: { Args: { target_school: string; target_user: string }; Returns: undefined };
+admin_invite_access: { Args: { target_school: string; account_email: string; account_roles: SchoolRole[]; profile?: string; invited_user?: string }; Returns: undefined };
 }; Enums: { school_role: SchoolRole }; CompositeTypes: Record<never, never> } };\n`;
 await writeFile('lib/supabase/database.types.ts',output);
 await db.close();

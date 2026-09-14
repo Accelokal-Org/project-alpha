@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SetupForm, type FormField } from "./setup-form";
 import type { AdminData } from "@/features/admin/queries";
+import { InvitationForm } from "./invitation-form";
 const nameField:FormField={name:"name",label:"Name"};
 const codeField:FormField={name:"code",label:"Code"};
 function Records({title,headers,rows}:{title:string;headers:string[];rows:React.ReactNode[][]}) {
@@ -51,6 +52,7 @@ export function SchoolPanel({data:d,tab}:{data:AdminData;tab:string}) {
   <Records title="Subject enrollments" headers={["Student","Class / subject"]} rows={d.subjectEnrollments.map(e=>[d.students.find(t=>t.id===e.student_id)?.display_name,offeringName(e.offering_id)])} />
  </>;
  if(tab==="accounts") return <>
+  <div className="mb-5"><InvitationForm schoolId={schoolId} teachers={d.teachers} students={d.students}/></div>
   <div className="grid md:grid-cols-2 gap-4">
    <SetupForm operation="link_account" schoolId={schoolId} title="Connect a login account" description="Connect an existing login by email. Add Teacher and Adviser separately for a combined role. No invitation email is sent." fields={[
     {name:"email",label:"Account email",type:"email"},select("role","School role",[{value:"TEACHER",label:"Teacher"},{value:"ADVISER",label:"Adviser"},{value:"STUDENT",label:"Student"},{value:"SCHOOL_HEAD",label:"School head"}]),

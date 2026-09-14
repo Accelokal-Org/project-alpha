@@ -16,7 +16,7 @@ Built with Next.js App Router, TypeScript, Tailwind and Supabase PostgreSQL/Auth
 
 Open `/deskonekt/admin/login` for the separate superadmin sign-in. After the one-time Supabase connection and `npm run admin:bootstrap`, create schools, configure classes and accounts through the admin UI. No manual school SQL is needed.
 
-See [superadmin setup](docs/superadmin.md) for the complete first-login steps. Invitation emails and billing are planned for later.
+See [superadmin setup](docs/superadmin.md) for the complete first-login steps. [Account invitations](docs/account-invitations.md) are available after provider/deployment setup. Billing is planned for later.
 
 ## Run the application
 

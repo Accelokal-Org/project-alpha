@@ -36,7 +36,7 @@ No hosted Supabase project or Vercel deployment was created during this initial 
 
 ## Next vertical slices
 
-1. Extend the implemented superadmin setup with edit/removal/revocation flows and school-head approval boundaries when needed. Keep invitation emails and billing for later.
+1. Extend the implemented superadmin setup with edit/removal/revocation flows and school-head approval boundaries when needed. Invitations and password setup are implemented; keep billing for later.
 2. Teacher creates assessment → records and reviews manual scores → explicitly publishes → student receives only their published score. Add separate student-safe projections and RLS tests before the student score UI.
 3. Configurable attendance → recording/history → student sees own attendance only.
 4. Lesson plans and reusable templates → upcoming dashboard items.
@@ -52,3 +52,7 @@ No hosted Supabase project or Vercel deployment was created during this initial 
 - The first repository query layer assumes a small school; Supabase’s 1,000-row API cap must be replaced with explicit server pagination for larger deployments. Roster UI pagination only paginates the returned roster.
 - No real end-to-end Auth session was available without starting Supabase. Embedded PostgreSQL tests cover schema/RLS, not Auth, cookie refresh, or PostgREST configuration.
 - No production monitoring/Sentry configuration yet; no third-party telemetry is enabled.
+
+## Account invitation delivery
+
+Superadmins can invite new Auth users with school roles and a teacher/student profile. Recipients accept an email token and set their password. See [deployment and limitations](account-invitations.md). Auth email delivery uses the configured Resend SMTP provider through Supabase; the narrowly scoped Auth invitation client requires a server-only service-role key, while school-role writes use the caller JWT.
