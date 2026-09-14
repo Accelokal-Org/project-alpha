@@ -16,6 +16,9 @@
 - Light, compact, table-first UI using navy #07124A, purple #6133E8, teal #11B8C7.
 
 ## Code map
+- `assets/brand/app-icons/`: original Deskonekt app icon submissions, with a README describing accepted source files and naming. Files here are not automatically published or wired into app metadata.
+- `public/brand/deskonekt-icon-light.png` and `deskonekt-icon-dark.png`: unchanged copies of supplied app icons, used in the workspace header and sign-in branding respectively. Rendered with Next Image at their original aspect ratios, with adjacent text providing the accessible brand name.
+- `app/icon.png`: unchanged copy of the supplied `icon:favicon.png`; Next.js automatically generates the browser icon metadata link. Submitted banners/lockups remain in the source asset folder.
 - `app/`: public entry/login, isolated preview, protected teacher/class and student routes.
 - `components/`: application shell, roster table, UI primitives.
 - `features/classes/`: roster/assignment queries, safe DTOs, fictional preview fixtures.
@@ -40,6 +43,8 @@
 - Protected layout is explicitly dynamic; there is no cached public rendering of user records.
 
 ## Setup and validation (2026-09-14)
+- Applied the submitted light/dark app icons to the workspace header/sign-in and registered the submitted favicon as `app/icon.png`. Verified source dimensions and unchanged asset copies; typecheck, lint, whitespace checks and production build passed, including the generated `/icon.png` route. No behavioral tests added for this asset-only update.
+- Added the app icon submission folder and guidance. Documentation-only change; verified paths and whitespace, no application tests required.
 - Deskonekt brand integration: updated sign-in, workspace header, browser metadata, README and product/design bible; removed the previous placeholder name and copy. Typecheck, lint and production build passed. Brand-only changes did not require new behavioral tests.
 - User requested preparation for a **new Supabase project**. No remote project, credentials, or deployment was created.
 - `npm run dev` starts the app. The retained preview server uses `http://127.0.0.1:3000/preview`.
@@ -54,6 +59,7 @@
 - Deferred work and limitations are in `docs/implementation.md`, especially manual setup UI, full live Auth checks, server pagination above 1,000 rows, and future audited academic mutations.
 
 ## Guardrails
+- Include a suggested GitHub commit title and description in change handoffs, as requested by the user. Providing commit text does not mean a commit was created or pushed.
 - Use Deskonekt for product-facing names. Keep `project-alpha` as the internal repository/infrastructure identifier. Brand positioning describes the full vision; do not imply unbuilt features are available.
 - Never commit secrets or real student data. Do not use a service-role key in request handling.
 - Roles come from database memberships, never editable user metadata.
