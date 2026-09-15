@@ -92,11 +92,28 @@ grade_level_id: string;
 name: string;
 adviser_teacher_id: string | null;
 }>;
+grade_calculation_rules: Table<{
+scheme_id: string;
+method: string;
+missing_scores: string;
+decimal_places: number;
+approved_by: string | null;
+approved_at: string;
+}>;
 grade_levels: Table<{
 id: string;
 school_id: string;
 name: string;
 sort_order: number;
+}>;
+grade_submissions: Table<{
+id: string;
+offering_id: string;
+scheme_id: string;
+period_id: string;
+snapshot: Json;
+submitted_by: string | null;
+submitted_at: string;
 }>;
 grading_components: Table<{
 id: string;
@@ -179,6 +196,11 @@ school_id: string;
 offering_id: string;
 student_id: string;
 }>;
+subject_gradebooks: Table<{
+offering_id: string;
+school_id: string;
+scheme_id: string;
+}>;
 subject_offerings: Table<{
 id: string;
 school_id: string;
@@ -204,6 +226,10 @@ employee_code: string;
 display_name: string;
 }>;
 }; Views: Record<never, never>; Functions: {
+approve_grade_calculation: { Args: { scheme: string; method: string; missing_scores: string; decimal_places: number }; Returns: undefined };
+grade_period_options: { Args: { offering: string }; Returns: { id: string; name: string; scheme_id: string; scheme_name: string; starts_on: string; ends_on: string }[] };
+preview_period_grades: { Args: { offering: string; period: string }; Returns: Json };
+submit_period_grades: { Args: { offering: string; period: string; expected_token: string }; Returns: string };
 can_configure_grading: { Args: { target_school: string }; Returns: boolean };
 save_grading_scheme: { Args: { target_school: string; year_id: string; target: string | null; expected_version: number; scheme_name: string; periods: Json; components: Json }; Returns: string };
 approve_grading_scheme: { Args: { target: string; expected_version: number }; Returns: undefined };

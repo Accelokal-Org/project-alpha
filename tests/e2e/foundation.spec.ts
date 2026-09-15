@@ -62,3 +62,12 @@ test("school grading keeps its school selection through sign-in",async({page})=>
  await expect(page.locator('input[name="next"]')).toHaveValue(path);
  await expect(page.getByRole("button",{name:"Approve scheme"})).toHaveCount(0);
 });
+
+test("grade review keeps its period selection through sign-in",async({page})=>{
+ const path="/teacher/classes/70000000-0000-4000-8000-000000000001?tab=grades&period=90000000-0000-4000-8000-000000000001";
+ await page.goto(path);
+ await expect(page).toHaveURL(/\/login/);
+ expect(new URL(page.url()).searchParams.get("next")).toBe(path);
+ await expect(page.locator('input[name="next"]')).toHaveValue(path);
+ await expect(page.getByRole("button",{name:"Submit period grades"})).toHaveCount(0);
+});

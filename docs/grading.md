@@ -33,7 +33,7 @@ Open **My classes → subject → Assessments → select a draft → Grading cla
 
 Scores and classification use separate views. Save before switching views. A classification save increments the assessment version, so a score save from a stale browser tab must refresh rather than overwrite changes. Published assessments remain immutable, including their classification.
 
-Existing assessments are not assigned automatically. Unclassified assessments can still use the existing manual score/publication flow; this release does not calculate grades or assume a weight for them. Previously published unclassified assessments cannot be retroactively classified through this release.
+Existing assessments are not assigned automatically. Unclassified assessments can still use the existing manual score/publication flow; unclassified assessments block period submission when they fall within the selected date range. No weight is assumed for them. Previously published unclassified assessments cannot be retroactively classified through this release.
 
 ## Access and implementation
 
@@ -41,4 +41,4 @@ All reads and writes use the caller's Supabase session. RLS hides grading drafts
 
 Only an assigned subject teacher can classify an assessment. Database checks enforce scheme approval, school and school-year matching, period date eligibility and component membership. Direct authenticated writes are disabled. Save/approval/classification operations and their audit entries are atomic; row locks and expected versions handle conflicts. No service-role academic writes, hosted fixtures or test pages are added.
 
-This release establishes periods, components, weights, approval and assessment links. Aggregation methods, missing-score handling, transmutation/rounding rules, calculated grades, teacher grade submission, adviser lock/unlock and completion dashboards remain subsequent work. No grade calculation is presented as complete.
+School-selected calculation methods, missing-score handling, final rounding and teacher period submission are now implemented in the next migration. See [grade calculation and submission](grade-submission.md). Adviser lock/unlock, corrections, custom transmutation and completion dashboards remain subsequent work.

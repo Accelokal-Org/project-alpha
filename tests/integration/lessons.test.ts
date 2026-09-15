@@ -53,7 +53,7 @@ it("rejects cross-offering updates and cross-school creates",async()=>{
  await expect(save({subject:"70000000-0000-4000-8000-000000000004"})).rejects.toThrow(/Assigned teacher/);
 });
 it("attendance installs without assessments and its repair is repeatable",async()=>{
- const independent=await createTestDatabase(false,["202609150001_assessments.sql","202609150004_grading_setup.sql"]);
+ const independent=await createTestDatabase(false,["202609150001_assessments.sql","202609150004_grading_setup.sql","202609150005_grade_submission.sql"]);
  try{
   const repair=await readFile(new URL("../../supabase/repairs/attendance_helper.sql",import.meta.url),"utf8");
   await independent.exec(repair);await independent.exec(repair);

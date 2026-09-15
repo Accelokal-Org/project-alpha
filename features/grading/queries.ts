@@ -28,8 +28,12 @@ export async function getAssessmentGrading(assessment:{id:string;school_id:strin
  if(oError)throw new Error("Subject could not be loaded.");
  const {data:classroom,error:cError}=await client.from("classes").select("school_year_id").eq("id",offering.class_id).single();
  if(cError)throw new Error("School year could not be loaded.");
+ const book=await client.from("subject_gradebooks").select("scheme_id").eq("offering_id",assessment.offering_id).maybeSingle();
+ if(book.error)throw new Error("Subject grading scheme could not be loaded.");
+ let schemeQuery=client.from("grading_schemes").select("id,name").eq("school_id",assessment.school_id).eq("school_year_id",classroom.school_year_id).not("approved_at","is",null).order("name").limit(50);
+ if(book.data)schemeQuery=schemeQuery.eq("id",book.data.scheme_id);
  const [schemes,link]=await Promise.all([
-  client.from("grading_schemes").select("id,name").eq("school_id",assessment.school_id).eq("school_year_id",classroom.school_year_id).not("approved_at","is",null).order("name").limit(50),
+  schemeQuery,
   client.from("assessment_grading").select("scheme_id,period_id,component_id").eq("assessment_id",assessment.id).maybeSingle(),
  ]);
  if(schemes.error||link.error)throw new Error("Assessment grading settings could not be loaded.");
