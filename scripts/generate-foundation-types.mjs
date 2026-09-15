@@ -26,6 +26,11 @@ for (const [name, columns] of tables) {
  output += '}>;\n';
 }
 output += `}; Views: Record<never, never>; Functions: {
+correct_returned_assessment_scores: { Args: { target: string; expected_version: number; entries: Json; reason: string }; Returns: undefined };
+class_grade_review: { Args: { target_class: string }; Returns: { offering_id: string; subject: string; period_id: string | null; period_name: string | null; status: string; revision: number | null }[] };
+can_review_grades: { Args: { offering: string }; Returns: boolean };
+review_period_grades: { Args: { target: string; expected_version: number; decision: string; reason: string }; Returns: undefined };
+resubmit_period_grades: { Args: { target: string; expected_version: number; expected_token: string; correction_note: string }; Returns: undefined };
 approve_grade_calculation: { Args: { scheme: string; method: string; missing_scores: string; decimal_places: number }; Returns: undefined };
 grade_period_options: { Args: { offering: string }; Returns: { id: string; name: string; scheme_id: string; scheme_name: string; starts_on: string; ends_on: string }[] };
 preview_period_grades: { Args: { offering: string; period: string }; Returns: Json };

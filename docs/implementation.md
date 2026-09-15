@@ -40,7 +40,7 @@ No hosted Supabase project or Vercel deployment was created during this initial 
 2. Implemented: teacher creates assessment → saves/reviews manual draft scores → explicitly publishes → student receives only their own published score. Includes separate student projection, RLS and mutation-boundary tests; see [assessment setup](assessments.md).
 3. Implemented: configurable school attendance statuses → subject/date recording and correction history → student sees own saved attendance only. See [attendance setup](attendance.md).
 4. Implemented: lesson plans and reusable templates → upcoming teacher dashboard lessons. See [lesson-plan setup](lesson-plans.md).
-5. Implemented: named school-year grading schemes, periods, component weights, approval and assessment classification. See [grading setup](grading.md). Implemented next: [school calculation rules and teacher grade review/submission](grade-submission.md). Next: adviser return/reopen and lock/unlock → school-head completion view.
+5. Implemented: named school-year grading schemes, periods, component weights, approval and assessment classification. See [grading setup](grading.md). Implemented next: [school calculation rules and teacher grade review/submission](grade-submission.md). Implemented: [adviser review, return and teacher resubmission](grade-review.md). Next: adviser lock/unlock → school-head completion view.
 6. Configurable staff-only intervention rules and flags.
 7. Isolated answer-sheet generation/scanning/review pipeline, preserving manual entry.
 8. Report-card completeness validation, reasoned overrides and release boundary; defer visual designer.

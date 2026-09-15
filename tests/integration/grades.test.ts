@@ -88,3 +88,45 @@ it("honors revoked teacher access and rejects unrelated periods",async()=>{
  await expect(preview("00000000-0000-4000-8000-000000000000",4)).rejects.toThrow(/not available/);
  await db.exec("set role anon");try{await expect(db.query("select public.preview_period_grades($1,$2)",[offering,s.period])).rejects.toThrow(/permission denied/);}finally{await db.exec("reset role");}
 });
+
+async function assignAdviser(){await db.exec(`update public.teachers set user_id='${uid(6)}' where employee_code='T-002';update public.classes set adviser_teacher_id='40000000-0000-4000-8000-000000000002' where id='50000000-0000-4000-8000-000000000001'`);}
+async function submitted(){const s=await setup();const a=await assessment(s,s.components[0],10,5);await assessment(s,s.components[1],10,5);const p=await preview(s.period);const id=(await submit(s.period,p.token)).rows[0].id as string;return {...s,a,id};}
+const review=(id:string,version:number,decision:string,reason:string,n=6)=>actor(n,"select public.review_period_grades($1,$2,$3,$4)",[id,version,decision,reason]);
+it("allows only the assigned adviser to return a current revision with a reason",async()=>{
+ await assignAdviser();const s=await submitted();
+ for(const n of [1,2,3,4,5])await expect(review(s.id,1,"returned","Fix score",n)).rejects.toThrow(/Assigned adviser/);
+ await expect(review(s.id,1,"returned"," ")).rejects.toThrow(/reason/);
+ await review(s.id,1,"reviewed","");await expect(review(s.id,1,"returned","Fix score")).rejects.toThrow(/changed/);
+ await review(s.id,2,"returned","Check assessment score");
+ expect((await actor(6,"select status,revision,review_version from public.grade_submissions where id=$1",[s.id])).rows[0]).toEqual({status:"returned",revision:1,review_version:3});
+ expect((await actor(6,"select * from public.class_grade_review($1)",["50000000-0000-4000-8000-000000000001"])).rows.some(r=>r.status==="returned")).toBe(true);
+ await db.exec(`delete from public.school_memberships where user_id='${uid(6)}'`);
+ expect((await actor(6,"select public.can_review_grades($1) allowed",[offering])).rows[0].allowed).toBe(false);
+});
+it("preserves original snapshots and reasons through return, published-score correction and resubmission",async()=>{
+ await assignAdviser();const s=await submitted();
+ await actor(1,"select public.publish_assessment($1,3)",[s.a]);
+ await expect(actor(1,"select public.correct_returned_assessment_scores($1,4,$2,'Fix')",[s.a,JSON.stringify([{student_id:student,score:10}])])).rejects.toThrow(/return/);
+ await review(s.id,1,"returned","Verify written score");
+ await actor(1,"select public.correct_returned_assessment_scores($1,4,$2,'Checked original paper')",[s.a,JSON.stringify([{student_id:student,score:10}])]);
+ const fresh=await preview(s.period);
+ await expect(actor(1,"select public.resubmit_period_grades($1,1,$2,'Correction')",[s.id,fresh.token])).rejects.toThrow(/changed/);
+ await expect(actor(1,"select public.resubmit_period_grades($1,2,$2,'')",[s.id,fresh.token])).rejects.toThrow(/Describe/);
+ await actor(1,"select public.resubmit_period_grades($1,2,$2,'Verified and corrected written score')",[s.id,fresh.token]);
+ const versions=(await actor(6,"select revision,snapshot,correction_note from public.grade_submission_versions where submission_id=$1 order by revision",[s.id])).rows;
+ expect(versions).toHaveLength(2);expect((versions[0].snapshot as GradePreview).students[0].grade).toBe(50);expect((versions[1].snapshot as GradePreview).students[0].grade).toBe(70);
+ expect(versions[1].correction_note).toContain("Verified");
+ await expect(actor(1,"select public.correct_returned_assessment_scores($1,5,$2,'Again')",[s.a,JSON.stringify([{student_id:student,score:8}])])).rejects.toThrow(/return/);
+ expect((await actor(3,"select * from public.grade_submission_versions")).rows).toHaveLength(0);expect((await actor(3,"select * from public.grade_review_events")).rows).toHaveLength(0);
+ expect((await actor(6,"select action from public.grade_review_events where submission_id=$1 order by created_at",[s.id])).rows.map(e=>e.action)).toEqual(["submitted","returned","resubmitted"]);
+ await expect(actor(1,"update public.grade_submission_versions set correction_note='overwrite'")).rejects.toThrow(/permission denied/);
+});
+it("rejects resubmission without return, unauthorized corrections and stale recalculation tokens",async()=>{
+ await assignAdviser();const s=await submitted();const initial=await preview(s.period);
+ await expect(actor(1,"select public.resubmit_period_grades($1,1,$2,'Fix')",[s.id,initial.token])).rejects.toThrow(/returned/);
+ await review(s.id,1,"returned","Check totals");
+ for(const n of [2,3,4,5,6])await expect(actor(n,"select public.resubmit_period_grades($1,2,$2,'Fix')",[s.id,initial.token])).rejects.toThrow(/Assigned teacher/);
+ await actor(1,"select public.correct_returned_assessment_scores($1,3,$2,'Fix')",[s.a,JSON.stringify([{student_id:student,score:8}])]);
+ await expect(actor(1,"select public.resubmit_period_grades($1,2,$2,'Fix')",[s.id,initial.token])).rejects.toThrow(/changed/);
+ expect((await db.query("select count(*)::integer n from public.grade_submission_versions where submission_id=$1",[s.id])).rows[0]).toEqual({n:1});
+});

@@ -55,4 +55,4 @@ The first submission binds the subject offering to that approved scheme. Later p
 - Reviews support up to 500 students, 500 assessments in the period and 50,000 student-assessment combinations. Exceeding a bound blocks the review explicitly. Data is aggregated in PostgreSQL and returned as a single JSON result, avoiding Supabase row-cap truncation of score inputs.
 - Submitted history has at most 12 periods from the fixed scheme. Authorized staff access remains tied to the current offering permissions. No hosted samples, public test pages or automatic emails are added.
 
-Adviser review actions, return/reopen/correction, lock/unlock, school completion dashboards, custom transmutation and student release remain subsequent work. Submission is currently immutable; teachers must review carefully before confirming.
+Adviser review, return and teacher correction/resubmission are available through the next migration; see [grade review](grade-review.md). Earlier snapshots remain immutable. Lock/unlock, school completion dashboards, custom transmutation and student release remain subsequent work.

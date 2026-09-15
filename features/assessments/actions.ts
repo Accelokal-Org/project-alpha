@@ -34,3 +34,15 @@ export async function publishScores(_state:AssessmentState,form:FormData):Promis
  revalidatePath("/teacher","layout");revalidatePath("/student");
  return {success:"Scores published. Each student can see only their own result."};
 }
+
+export async function correctReturnedScores(_state:AssessmentState,form:FormData):Promise<AssessmentState>{
+ const {client}=await requireSession();
+ const entries=[...form.entries()].filter(([key])=>key.startsWith("score:")).map(([key,value])=>({student_id:key.slice(6),score:typeof value==="string"&&value.trim()===""?null:Number(value)}));
+ const parsed=scoreSchema.safeParse({target:form.get("target"),expected_version:Number(form.get("version")),entries});
+ const reason=form.get("reason");
+ if(!parsed.success||typeof reason!=="string"||!reason.trim()||reason.length>1000)return {error:"Enter valid scores and a correction reason (up to 1000 characters)."};
+ const {error}=await client.rpc("correct_returned_assessment_scores",{...parsed.data,reason:reason.trim()});
+ if(error)return {error:error.code==="40001"?"Scores changed. Refresh and review again.":"Correction failed. The linked period must still be returned and you must remain its assigned teacher."};
+ revalidatePath("/teacher","layout");revalidatePath("/student");
+ return {success:"Correction saved and audited. Published score results update immediately. Review and resubmit the returned period grades next."};
+}

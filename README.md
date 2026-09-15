@@ -81,3 +81,5 @@ Lesson plans, reusable templates and upcoming dashboard lessons: [setup and work
 Grading periods, component weights, approval and assessment classification: [setup and workflow](docs/grading.md).
 
 School-controlled grade calculation and teacher submission: [setup and workflow](docs/grade-submission.md).
+
+Adviser review, return reasons and teacher resubmission: [setup and workflow](docs/grade-review.md).

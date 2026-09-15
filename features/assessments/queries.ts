@@ -12,5 +12,11 @@ export async function getAssessments(offering:string,selected?:string){
  if(selected&&!detail?.data)notFound();
  const scores=selected?await client.from("assessment_scores").select("student_id,score").eq("assessment_id",selected).range(0,500):null;
  if(scores?.error)throw new Error("Scores could not be loaded.");
- return {list:list.data,selected:detail?.data??null,scores:scores?.data??[],canManage:access.data===true};
+ let canCorrect=false;
+ if(selected&&access.data===true){
+  const link=await client.from("assessment_grading").select("period_id").eq("assessment_id",selected).maybeSingle();
+  if(link.error)throw new Error("Assessment correction access could not be loaded.");
+  if(link.data){const submission=await client.from("grade_submissions").select("status").eq("offering_id",offering).eq("period_id",link.data.period_id).maybeSingle();if(submission.error)throw new Error("Submission status could not be loaded.");canCorrect=submission.data?.status==="returned";}
+ }
+ return {canCorrect,list:list.data,selected:detail?.data??null,scores:scores?.data??[],canManage:access.data===true};
 }
