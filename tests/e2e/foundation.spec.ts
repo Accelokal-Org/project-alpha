@@ -53,3 +53,12 @@ test("lesson links preserve the selected plan through sign-in",async({page})=>{
  await expect(page.locator('input[name="next"]')).toHaveValue(path);
  await expect(page.getByRole("button",{name:"Save lesson plan"})).toHaveCount(0);
 });
+
+test("school grading keeps its school selection through sign-in",async({page})=>{
+ const path="/teacher?view=grading&school=10000000-0000-4000-8000-000000000001";
+ await page.goto(path);
+ await expect(page).toHaveURL(/\/login/);
+ expect(new URL(page.url()).searchParams.get("next")).toBe(path);
+ await expect(page.locator('input[name="next"]')).toHaveValue(path);
+ await expect(page.getByRole("button",{name:"Approve scheme"})).toHaveCount(0);
+});

@@ -77,3 +77,5 @@ Teachers can create subject assessments, save draft scores and explicitly publis
 Configure school statuses in administration, then record subject attendance by date from the teacher workspace. Students see only their own saved marks. Apply the [attendance migration and setup](docs/attendance.md) before deployment.
 
 Lesson plans, reusable templates and upcoming dashboard lessons: [setup and workflow](docs/lesson-plans.md).
+
+Grading periods, component weights, approval and assessment classification: [setup and workflow](docs/grading.md).

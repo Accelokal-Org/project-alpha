@@ -21,6 +21,14 @@ action: string;
 details: Json;
 created_at: string;
 }>;
+assessment_grading: Table<{
+assessment_id: string;
+school_id: string;
+offering_id: string;
+scheme_id: string;
+period_id: string;
+component_id: string;
+}>;
 assessment_scores: Table<{
 assessment_id: string;
 school_id: string;
@@ -89,6 +97,28 @@ id: string;
 school_id: string;
 name: string;
 sort_order: number;
+}>;
+grading_components: Table<{
+id: string;
+scheme_id: string;
+name: string;
+weight: number;
+}>;
+grading_periods: Table<{
+id: string;
+scheme_id: string;
+name: string;
+starts_on: string;
+ends_on: string;
+}>;
+grading_schemes: Table<{
+id: string;
+school_id: string;
+school_year_id: string;
+name: string;
+version: number;
+approved_at: string | null;
+approved_by: string | null;
 }>;
 lesson_plan_events: Table<{
 id: string;
@@ -174,6 +204,10 @@ employee_code: string;
 display_name: string;
 }>;
 }; Views: Record<never, never>; Functions: {
+can_configure_grading: { Args: { target_school: string }; Returns: boolean };
+save_grading_scheme: { Args: { target_school: string; year_id: string; target: string | null; expected_version: number; scheme_name: string; periods: Json; components: Json }; Returns: string };
+approve_grading_scheme: { Args: { target: string; expected_version: number }; Returns: undefined };
+assign_assessment_grading: { Args: { target: string; expected_version: number; scheme: string | null; period: string | null; component: string | null }; Returns: undefined };
 can_manage_lessons: { Args: { offering: string }; Returns: boolean };
 save_lesson_plan: { Args: { offering: string; target: string | null; expected_version: number; title: string; objectives: string; activities: string; resources: string; lesson_date: string | null; is_template: boolean }; Returns: string };
 my_upcoming_lessons: { Args: Record<never, never>; Returns: Database["public"]["Tables"]["lesson_plans"]["Row"][] };

@@ -1,3 +1,4 @@
+import { GradingSettings } from "@/components/grading/settings";
 import Link from "@/components/ui/navigation-link";
 import { SetupForm, type FormField } from "./setup-form";
 import type { AdminData } from "@/features/admin/queries";
@@ -21,6 +22,7 @@ export function SchoolPanel({data:d,tab}:{data:AdminData;tab:string}) {
  const offeringOptions=d.offerings.map(o=>({value:o.id,label:offeringName(o.id)}));
  const select=(name:string,label:string,options:{value:string;label:string}[]):FormField=>({name,label,options});
  const classField=select("class_id","Class",classOptions), teacherField=select("teacher_id","Teacher",teacherOptions),studentField=select("student_id","Student",studentOptions),offeringField=select("offering_id","Class / subject",offeringOptions);
+ if(tab==="grading") return <GradingSettings school={schoolId}/>;
  if(tab==="attendance") return <AttendanceSettings schoolId={schoolId}/>;
  if(tab==="structure") return <>
   <div className="grid lg:grid-cols-3 gap-4">

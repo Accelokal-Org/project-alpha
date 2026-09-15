@@ -58,3 +58,7 @@ Implementation references: [Supabase Auth admin createUser](https://supabase.com
 Open `/teacher` directly, or choose **Open teacher workspace** in administration. If you need to sign in, the school login returns you to the requested teacher page. A direct visit to `/login` offers Teacher workspace and Student portal. Dedicated admin sign-in still opens administration and checks platform authority.
 
 An account can retain multiple roles: connect its existing email to a teacher profile using the school's Accounts tab, then assign its subjects/classes. Add Adviser separately when applicable. This does not remove School head or platform administrator access. The workspace choice controls navigation, not permissions; administrators and school heads retain their existing broader roster access. There is no impersonation or restricted teacher-role simulation.
+
+## Grading setup
+
+The school Grading tab supports named school-year schemes, periods, component weights, saved-draft review and explicit approval. School heads access the same setup from the teacher workspace. Apply only the new migration for this release; see [grading setup and workflow](grading.md).

@@ -26,6 +26,10 @@ for (const [name, columns] of tables) {
  output += '}>;\n';
 }
 output += `}; Views: Record<never, never>; Functions: {
+can_configure_grading: { Args: { target_school: string }; Returns: boolean };
+save_grading_scheme: { Args: { target_school: string; year_id: string; target: string | null; expected_version: number; scheme_name: string; periods: Json; components: Json }; Returns: string };
+approve_grading_scheme: { Args: { target: string; expected_version: number }; Returns: undefined };
+assign_assessment_grading: { Args: { target: string; expected_version: number; scheme: string | null; period: string | null; component: string | null }; Returns: undefined };
 can_manage_lessons: { Args: { offering: string }; Returns: boolean };
 save_lesson_plan: { Args: { offering: string; target: string | null; expected_version: number; title: string; objectives: string; activities: string; resources: string; lesson_date: string | null; is_template: boolean }; Returns: string };
 my_upcoming_lessons: { Args: Record<never, never>; Returns: Database["public"]["Tables"]["lesson_plans"]["Row"][] };
