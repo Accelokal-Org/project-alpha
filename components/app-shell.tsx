@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { SubmitButton } from "@/components/ui/submit-button";
+import Link from "@/components/ui/navigation-link";
 import Image from "next/image";
 import { LayoutDashboard, Users, ChevronDown, LogOut, ShieldCheck } from "lucide-react";
 import { logout } from "@/app/login/actions";
@@ -21,11 +22,11 @@ export function AppShell({ children, active = "workspace", name = "School accoun
      {!student && <Link href={`${base}?view=classes`} aria-current={active === "classes" ? "page" : undefined} className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm ${active === "classes" ? "bg-[#f0ebff] text-primary font-semibold" : "text-muted hover:bg-slate-50"}`}><Users size={17} />My classes</Link>}
     {adminAccess && <Link href="/deskonekt/admin" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-muted hover:bg-slate-50"><ShieldCheck size={17} />Administration</Link>}
     </nav>
-    <div className="hidden md:block mt-auto p-5 border-t border-border"><p className="text-[11px] uppercase tracking-wider text-muted mb-2">Signed-in account</p><form action={logout}><button className="flex items-center gap-2 text-sm text-muted"><LogOut size={15} /> Sign out</button></form></div>
+    <div className="hidden md:block mt-auto p-5 border-t border-border"><p className="text-[11px] uppercase tracking-wider text-muted mb-2">Signed-in account</p><form action={logout}><SubmitButton variant="ghost" pendingLabel="Signing out…"><LogOut size={15} /> Sign out</SubmitButton></form></div>
    </aside>
    <div className="min-w-0">
     <main id="main" className="p-5 lg:px-9 lg:py-8 max-w-[1440px] mx-auto">{children}</main>
-    <form action={logout} className="md:hidden p-5"><button className="text-primary">Sign out</button></form>
+    <form action={logout} className="md:hidden p-5"><SubmitButton variant="ghost" pendingLabel="Signing out…">Sign out</SubmitButton></form>
    </div>
   </div>
  </div>;

@@ -20,3 +20,12 @@ tbody tr:last-child td { border-bottom: 0; }
 tbody tr:hover { background: #fafbfe; }
 ::selection { background: #e7ddff; }
 @media print { aside, nav, .no-print { display: none !important; } main { margin: 0 !important; padding: 0 !important; } }
+
+/* Subtle interaction feedback; no delays or artificial loading states. */
+a, button { transition: background-color 150ms ease, color 150ms ease, opacity 150ms ease; }
+input, select { transition: border-color 150ms ease, box-shadow 150ms ease; }
+input:focus, select:focus { border-color: var(--color-primary); }
+button:disabled { cursor: not-allowed; }
+@media (prefers-reduced-motion: reduce) {
+ a, button, input, select { transition: none; }
+}

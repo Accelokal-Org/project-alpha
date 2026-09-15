@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/ui/navigation-link";
 import { ArrowLeft, Info } from "lucide-react";
 import { RosterTable } from "./roster-table";
 import type { Assignment, RosterStudent } from "@/features/classes/types";

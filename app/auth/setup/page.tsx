@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/ui/navigation-link";
 import { createClient } from "@/lib/supabase/server";
 import { AccountPasswordForm } from "@/components/account-setup-form";
 import { isSupabaseConfigured } from "@/lib/supabase/env";

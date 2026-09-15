@@ -1,1 +1,2 @@
-export default function Loading() { return <main className="p-10" role="status">Loading your school workspace…</main>; }
+import { PageLoading } from "@/components/page-loading";
+export default function Loading(){return <PageLoading label="Loading your school workspace…"/>;}

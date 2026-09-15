@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/navigation-link";
 import { LoginForm } from "@/components/login-form";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { brand } from "@/lib/brand";

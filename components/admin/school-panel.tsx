@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/ui/navigation-link";
 import { SetupForm, type FormField } from "./setup-form";
 import type { AdminData } from "@/features/admin/queries";
 import { InvitationForm } from "./invitation-form";

@@ -1,0 +1,4 @@
+import { Spinner } from "@/components/ui/feedback";
+export function PageLoading({label="Loading your workspace…"}:{label?:string}) {
+ return <div className="w-full max-w-6xl mx-auto p-6 sm:p-9" aria-busy="true"><div role="status" className="flex gap-3 items-center text-primary font-medium mb-7"><Spinner/>{label}</div><div aria-hidden="true" className="space-y-6 motion-safe:animate-pulse"><div className="h-7 w-52 rounded bg-slate-200"/><div className="h-4 w-3/4 max-w-md rounded bg-slate-200"/><div className="grid sm:grid-cols-3 gap-4">{[0,1,2].map(n=><div key={n} className="h-24 bg-white border border-border rounded-lg"/>)}</div><div className="bg-white border border-border rounded-lg p-5 space-y-5">{[0,1,2,3,4].map(n=><div key={n} className="h-5 rounded bg-slate-100"/>)}</div></div></div>;
+}

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/ui/navigation-link";
 export const dynamic="force-dynamic";
 export const metadata={title:"Set up your account",robots:{index:false,follow:false},referrer:"no-referrer" as const};
 export default function AuthLayout({children}:{children:React.ReactNode}) {

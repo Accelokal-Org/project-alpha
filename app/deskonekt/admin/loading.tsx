@@ -1,1 +1,2 @@
-export default function Loading() { return <main className="p-8" role="status">Loading administration…</main>; }
+import { PageLoading } from "@/components/page-loading";
+export default function Loading(){return <PageLoading label="Loading administration…"/>;}

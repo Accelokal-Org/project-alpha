@@ -93,3 +93,12 @@
 - SMTP delivery and role linking are separate operations; preflight prevents known failures, final RPC is atomic, partial failure requires connecting the existing account. No reissue UI or self-service recovery yet. Delivery acceptance does not prove inbox receipt.
 - Validation: 56 isolated unit/integration checks passed (invitation authorization, role validation, multi-role assignment, partial failures, token/password handling); 4 production-browser checks passed including invitation landing/session protection. Typecheck, lint, Webpack production build and whitespace checks passed. Hosted Auth/SMTP delivery remains unverified.
 - Offline type-generator RPC declarations updated for admin_invite_access and retired sample RPC removed.
+
+## Loading and action feedback (2026-09-14)
+- Added shared `components/page-loading.tsx` skeletons and loading boundaries for root, school workspace, teacher directory/roster, admin and account setup routes. Pending UI follows real Suspense/navigation state; animations respect reduced motion.
+- `components/ui/navigation-link.tsx` wraps Next Link with useLinkStatus. Pending links show a fixed loading indicator without moving link content. Shared links use this component, including admin query-only tabs. Prefetched instant navigation may skip pending feedback.
+- `components/ui/submit-button.tsx` uses useFormStatus for disabled pending buttons and spinners, including sign-out forms. `components/ui/feedback.tsx` provides consistent accessible progress/success/error panels; earlier messages are hidden while another submission is pending.
+- Existing login, setup, invitation and password/acceptance forms use shared feedback and aria-busy. No request delays or email/data changes introduced.
+- `components/admin/school-switcher.tsx` replaces the native GET reload with router navigation and pending feedback. `components/retry-error.tsx` adds pending retry controls; root/account error boundaries now complement existing school/admin boundaries.
+- CSS adds restrained hover/focus transitions with reduced-motion override. Local roster filtering remains immediate and retains its live result counts.
+- Validation: Webpack production build, lint, standalone typecheck and whitespace checks passed. Six production-browser checks passed, including delayed navigation, pending/disabled submission and failed-request recovery. Requests were intercepted; no hosted email/database mutations occurred. Changes remain local; no migration needed.

@@ -56,3 +56,7 @@ No hosted Supabase project or Vercel deployment was created during this initial 
 ## Account invitation delivery
 
 Superadmins can invite new Auth users with school roles and a teacher/student profile. Recipients accept an email token and set their password. See [deployment and limitations](account-invitations.md). Auth email delivery uses the configured Resend SMTP provider through Supabase; the narrowly scoped Auth invitation client requires a server-only service-role key, while school-role writes use the caller JWT.
+
+## Loading and feedback
+
+Route loading boundaries show skeletons while pages resolve. Navigation links show pending feedback, and school switching updates without a full document reload. Server-action forms use disabled pending buttons/spinners and accessible progress, success and error panels. Page failures offer a retry action. Motion respects the reduced-motion preference; immediate local filtering stays immediate.

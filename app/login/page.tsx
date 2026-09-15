@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/ui/navigation-link";
 import Image from "next/image";
 import { ShieldCheck } from "lucide-react";
 import { LoginForm } from "@/components/login-form";

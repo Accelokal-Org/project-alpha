@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/ui/navigation-link";
 import { ArrowRight, BookOpen, Users } from "lucide-react";
 import type { Assignment } from "@/features/classes/types";
 export function AssignmentList({ assignments }: { assignments: Assignment[]; }) {
