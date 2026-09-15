@@ -34,6 +34,10 @@ create_assessment: { Args: { offering: string; title: string; assessment_date: s
 save_assessment_scores: { Args: { target: string; expected_version: number; entries: Json }; Returns: undefined };
 publish_assessment: { Args: { target: string; expected_version: number }; Returns: undefined };
 my_published_scores: { Args: Record<never, never>; Returns: { assessment_id: string; title: string; assessment_date: string; subject: string; class_name: string; school: string; score: number; max_score: number; published_at: string }[] };
+can_manage_attendance: { Args: { offering: string }; Returns: boolean };
+configure_attendance_status: { Args: { target_school: string; status_code: string; status_label: string; enabled: boolean }; Returns: undefined };
+save_attendance: { Args: { offering: string; day: string; expected_version: number; entries: Json; reason: string }; Returns: undefined };
+my_attendance: { Args: Record<never, never>; Returns: { day_id: string; attendance_date: string; subject: string; class_name: string; school: string; status: string }[] };
 admin_accounts: { Args: { target_school: string }; Returns: { user_id: string; email: string; role: SchoolRole }[] };
 admin_invite_access: { Args: { target_school: string; account_email: string; account_roles: SchoolRole[]; profile?: string; invited_user?: string }; Returns: undefined };
 }; Enums: { school_role: SchoolRole }; CompositeTypes: Record<never, never> } };\n`;

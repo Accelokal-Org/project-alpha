@@ -1,0 +1,3 @@
+import {z} from "zod";
+export const attendanceSchema=z.object({offering:z.uuid(),day:z.iso.date(),expected_version:z.number().int().min(0),reason:z.string().trim().max(500),entries:z.array(z.object({student_id:z.uuid(),status_code:z.string().regex(/^[A-Z][A-Z0-9_]{0,19}$/).nullable()})).min(1).max(500)}).refine(v=>new Set(v.entries.map(e=>e.student_id)).size===v.entries.length,"Duplicate student.").refine(v=>v.expected_version===0||v.reason.length>0,"Give a reason for updating attendance.");
+export const statusSchema=z.object({target_school:z.uuid(),status_code:z.string().trim().regex(/^[A-Z][A-Z0-9_]{0,19}$/,"Use an uppercase code, such as PRESENT."),status_label:z.string().trim().min(1).max(60),enabled:z.boolean()});

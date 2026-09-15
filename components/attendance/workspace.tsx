@@ -1,0 +1,11 @@
+import Link from "@/components/ui/navigation-link";
+import {getAttendance} from "@/features/attendance/queries";
+import {AttendanceEditor} from "./editor";
+import {AttendanceDatePicker} from "./date-picker";
+import type {RosterStudent} from "@/features/classes/types";
+export async function AttendanceWorkspace({offering,schoolId,date,students}:{offering:string;schoolId:string;date?:string;students:RosterStudent[]}){
+ const d=await getAttendance(offering,schoolId,date);
+ return <><AttendanceDatePicker offering={offering} date={d.selectedDate} today={d.today}/><p className="mt-2 text-xs text-muted">School timezone: {d.timezone}</p><AttendanceEditor key={`${offering}-${d.selectedDate}`} offering={offering} date={d.selectedDate} today={d.today} version={d.version} students={students} records={d.records} statuses={d.statuses} canManage={d.canManage}/>
+ <div className="grid lg:grid-cols-2 gap-5 mt-5"><section className="bg-white border border-border rounded-lg p-5"><h2 className="font-semibold">Recorded dates</h2><p className="text-xs text-muted mt-1">Most recent 60; use the date picker for earlier records.</p><div className="flex flex-wrap gap-3 mt-4">{d.days.map(day=><Link key={day.id} href={`/teacher/classes/${offering}?tab=attendance&date=${day.attendance_date}`} aria-current={day.attendance_date===d.selectedDate?"page":undefined} className="text-sm text-primary border border-border rounded px-3 py-2">{day.attendance_date}</Link>)}</div>{!d.days.length&&<p className="mt-4 text-muted">No attendance saved yet.</p>}</section>
+ <section className="bg-white border border-border rounded-lg p-5"><h2 className="font-semibold">Changes for {d.selectedDate}</h2><p className="text-xs text-muted mt-1">Latest 20 saves · Staff only</p><ul className="divide-y divide-border mt-3">{d.history.map(event=><li key={event.id} className="py-3"><p className="text-sm">{event.reason||"Initial attendance recording"}</p><p className="text-xs text-muted mt-1">{new Intl.DateTimeFormat("en-PH",{timeZone:d.timezone,dateStyle:"medium",timeStyle:"short"}).format(new Date(event.created_at))}</p></li>)}</ul>{!d.history.length&&<p className="mt-4 text-muted">No changes recorded for this date.</p>}</section></div></>;
+}

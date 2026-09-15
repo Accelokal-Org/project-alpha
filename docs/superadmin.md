@@ -30,6 +30,7 @@ School creation and ongoing foundation setup now happen in the web UI. The servi
 | Subjects | Add subjects and connect them to classes; open their actual rosters |
 | Assignments | Assign subject teachers/advisers, enroll individual students in classes/subjects, and add a whole class to a subject |
 | Accounts | Invite a new account with school roles, or connect an existing Auth account |
+| Attendance | Configure school attendance codes, labels and active status |
 | Audit | Read the latest 30 setup changes for the selected school |
 
 ## Existing Auth accounts
@@ -48,7 +49,7 @@ The preview, sample-school generator, sample-login provisioner and testing tab h
 - Editing existing entities beyond school name/timezone and adviser assignment, removing enrollments, account recovery, and role revocation UI are not included in this initial admin milestone.
 - School listing is limited to the latest 200 schools; per-school lists inherit the 1,000-row Supabase API cap. Add server pagination before larger-scale rollout.
 - Invitation emails now use Supabase Auth with the configured SMTP provider. See [invitation deployment](account-invitations.md). Billing remains deferred.
-- Scoring, attendance, scheduling, lesson planning and grade/report-card workflows remain future application milestones. They cannot yet be exercised from admin.
+- Scoring and subject attendance are available in teacher workspaces; attendance statuses are configured here. Scheduling, lesson planning and grade/report-card workflows remain future milestones.
 
 Implementation references: [Supabase Auth admin createUser](https://supabase.com/docs/reference/javascript/auth-admin-createuser), [Next.js authentication](https://nextjs.org/docs/app/guides/authentication).
 

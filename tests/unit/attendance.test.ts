@@ -1,0 +1,10 @@
+import {beforeEach,it,expect,vi} from "vitest";
+import {attendanceSchema,statusSchema} from "@/features/attendance/schema";
+const m=vi.hoisted(()=>({session:vi.fn(),admin:vi.fn(),rpc:vi.fn()}));
+vi.mock("@/lib/auth/session",()=>({requireSession:m.session}));vi.mock("@/features/admin/access",()=>({requireAdmin:m.admin}));vi.mock("next/cache",()=>({revalidatePath:vi.fn()}));
+import {saveAttendance,configureStatus} from "@/features/attendance/actions";
+const id="70000000-0000-4000-8000-000000000001";
+beforeEach(()=>{vi.clearAllMocks();m.session.mockResolvedValue({client:{rpc:m.rpc}});m.admin.mockResolvedValue({client:{rpc:m.rpc}});m.rpc.mockResolvedValue({error:null});});
+it("validates calendar dates and requires a correction reason",()=>{const value={offering:id,day:"2000-01-01",expected_version:0,reason:"",entries:[{student_id:id,status_code:null}]};expect(attendanceSchema.safeParse(value).success).toBe(true);expect(attendanceSchema.safeParse({...value,day:"2000-02-30"}).success).toBe(false);expect(attendanceSchema.safeParse({...value,expected_version:1}).success).toBe(false);expect(statusSchema.safeParse({target_school:id,status_code:"bad code",status_label:"Late",enabled:true}).success).toBe(false);});
+it("converts unmarked entries to null without inventing a status",async()=>{const f=new FormData();f.set("offering",id);f.set("day","2000-01-01");f.set("version","0");f.set(`attendance:${id}`,"");expect((await saveAttendance({},f)).success).toContain("saved");expect(m.rpc).toHaveBeenCalledWith("save_attendance",{offering:id,day:"2000-01-01",expected_version:0,reason:"",entries:[{student_id:id,status_code:null}]});});
+it("checks admin authority before changing status definitions",async()=>{m.admin.mockRejectedValue(new Error("Denied"));await expect(configureStatus({},new FormData())).rejects.toThrow("Denied");expect(m.rpc).not.toHaveBeenCalled();});
