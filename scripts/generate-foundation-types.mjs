@@ -26,6 +26,9 @@ for (const [name, columns] of tables) {
  output += '}>;\n';
 }
 output += `}; Views: Record<never, never>; Functions: {
+can_manage_lessons: { Args: { offering: string }; Returns: boolean };
+save_lesson_plan: { Args: { offering: string; target: string | null; expected_version: number; title: string; objectives: string; activities: string; resources: string; lesson_date: string | null; is_template: boolean }; Returns: string };
+my_upcoming_lessons: { Args: Record<never, never>; Returns: Database["public"]["Tables"]["lesson_plans"]["Row"][] };
 staff_offerings: { Args: Record<never, never>; Returns: Database["public"]["Tables"]["subject_offerings"]["Row"][] };
 is_app_manager: { Args: Record<never, never>; Returns: boolean };
 admin_setup: { Args: { operation: string; payload: Json }; Returns: Json };

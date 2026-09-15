@@ -32,3 +32,7 @@ The editor supports up to 500 students and explicitly disables saving for larger
 Per-period sessions, advisory daily attendance, computed absence percentages, reports, policy-based attendance interventions, and attendance notifications are not implemented. No sample school data is created by this migration.
 
 Embedded PostgreSQL checks cover privacy, correction audit, inactive/renamed statuses, enrollment, configuration boundaries, rejected stale saves, revoked access and atomic rollback. Hosted Auth/PostgREST and authenticated teacher UI validation remain outstanding; no real attendance records were created during implementation.
+
+## Missing authorization helper
+
+If setup reports `private.teaches_offering(uuid) does not exist`, see the [non-destructive repair instructions](lesson-plans.md#attendance-helper-recovery). The updated attendance migration defines its shared helper directly; it no longer relies on the assessment migration to create that function.

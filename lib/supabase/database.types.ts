@@ -90,6 +90,29 @@ school_id: string;
 name: string;
 sort_order: number;
 }>;
+lesson_plan_events: Table<{
+id: string;
+plan_id: string;
+actor_id: string | null;
+before_value: Json | null;
+after_value: Json;
+created_at: string;
+}>;
+lesson_plans: Table<{
+id: string;
+school_id: string;
+offering_id: string;
+title: string;
+objectives: string;
+activities: string;
+resources: string;
+lesson_date: string | null;
+is_template: boolean;
+version: number;
+created_by: string | null;
+created_at: string;
+updated_at: string;
+}>;
 platform_admins: Table<{
 user_id: string;
 created_at: string;
@@ -151,6 +174,9 @@ employee_code: string;
 display_name: string;
 }>;
 }; Views: Record<never, never>; Functions: {
+can_manage_lessons: { Args: { offering: string }; Returns: boolean };
+save_lesson_plan: { Args: { offering: string; target: string | null; expected_version: number; title: string; objectives: string; activities: string; resources: string; lesson_date: string | null; is_template: boolean }; Returns: string };
+my_upcoming_lessons: { Args: Record<never, never>; Returns: Database["public"]["Tables"]["lesson_plans"]["Row"][] };
 staff_offerings: { Args: Record<never, never>; Returns: Database["public"]["Tables"]["subject_offerings"]["Row"][] };
 is_app_manager: { Args: Record<never, never>; Returns: boolean };
 admin_setup: { Args: { operation: string; payload: Json }; Returns: Json };

@@ -1,3 +1,10 @@
+-- Shared authorization helper is defined here as well for independent attendance setup.
+create or replace function private.teaches_offering(oid uuid) returns boolean language sql stable security definer set search_path='' as $$
+ select exists(select 1 from public.teacher_assignments a join public.teachers t on t.id=a.teacher_id
+ where a.offering_id=oid and t.user_id=auth.uid() and private.has_role(a.school_id,array['TEACHER']::public.school_role[]));
+$$;
+revoke all on function private.teaches_offering(uuid) from public,anon;
+grant execute on function private.teaches_offering(uuid) to authenticated;
 create table public.attendance_statuses (
  school_id uuid not null references public.schools(id), code text not null check(code ~ '^[A-Z][A-Z0-9_]{0,19}$'),
  label text not null check(length(btrim(label)) between 1 and 60), active boolean not null default true,

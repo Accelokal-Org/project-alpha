@@ -19,7 +19,7 @@ create table public.assessment_events (
  actor_id uuid references auth.users(id) on delete set null,action text not null,details jsonb not null,
  created_at timestamptz not null default now()
 );
-create function private.teaches_offering(oid uuid) returns boolean language sql stable security definer set search_path='' as $$
+create or replace function private.teaches_offering(oid uuid) returns boolean language sql stable security definer set search_path='' as $$
  select exists(select 1 from public.teacher_assignments a join public.teachers t on t.id=a.teacher_id
  where a.offering_id=oid and t.user_id=auth.uid() and private.has_role(a.school_id,array['TEACHER']::public.school_role[]));
 $$;

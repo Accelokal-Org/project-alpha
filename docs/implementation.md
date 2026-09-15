@@ -10,7 +10,7 @@ The application has no public preview or sample-data generation controls. Automa
 
 ## Teacher workspace
 
-The teacher landing page includes subject/advisory assignment totals and unique class-section counts. Teachers can search class names, subjects and codes, combine school/year/responsibility filters, and open authorized rosters. No new migration is required for this workspace iteration. Subject pages now include [assessments and manual scoring](assessments.md). Subject attendance is now available; lesson plans remain a subsequent slice.
+The teacher landing page includes subject/advisory assignment totals and unique class-section counts. Teachers can search class names, subjects and codes, combine school/year/responsibility filters, and open authorized rosters. No new migration is required for this workspace iteration. Subject pages now include [assessments and manual scoring](assessments.md). Subject attendance is now available; [lesson plans and reusable templates](lesson-plans.md) are now available.
 
 ## Architecture
 
@@ -39,7 +39,7 @@ No hosted Supabase project or Vercel deployment was created during this initial 
 1. Extend the implemented superadmin setup with edit/removal/revocation flows and school-head approval boundaries when needed. Invitations and password setup are implemented; keep billing for later.
 2. Implemented: teacher creates assessment → saves/reviews manual draft scores → explicitly publishes → student receives only their own published score. Includes separate student projection, RLS and mutation-boundary tests; see [assessment setup](assessments.md).
 3. Implemented: configurable school attendance statuses → subject/date recording and correction history → student sees own saved attendance only. See [attendance setup](attendance.md).
-4. Lesson plans and reusable templates → upcoming dashboard items.
+4. Implemented: lesson plans and reusable templates → upcoming teacher dashboard lessons. See [lesson-plan setup](lesson-plans.md).
 5. Configurable grade components → approval → calculation → submission → adviser lock/unlock → school-head completion view.
 6. Configurable staff-only intervention rules and flags.
 7. Isolated answer-sheet generation/scanning/review pipeline, preserving manual entry.
@@ -47,7 +47,7 @@ No hosted Supabase project or Vercel deployment was created during this initial 
 
 ## Deliberate limitations
 
-- Assessment/manual scoring is implemented. No schedule, grade calculation, intervention, scanner, template or report-card workflows yet. No placeholders pretend those actions are complete.
+- Assessment/manual scoring is implemented. No timetable, grade calculation, intervention, scanner or report-card workflows yet. No placeholders pretend those actions are complete.
 - Schema installation and the first superadmin still need one-time operator setup. School records and assignments are now managed through the superadmin UI.
 - The first repository query layer assumes a small school; Supabase’s 1,000-row API cap must be replaced with explicit server pagination for larger deployments. Roster UI pagination only paginates the returned roster.
 - No real end-to-end Auth session was available without starting Supabase. Embedded PostgreSQL tests cover schema/RLS, not Auth, cookie refresh, or PostgREST configuration.
