@@ -88,3 +88,11 @@ test("completion dashboard preserves school, year and status during sign-in",asy
  await expect(page.locator('input[name="next"]')).toHaveValue(path);
  await expect(page.getByRole("button",{name:"Unlock grades"})).toHaveCount(0);
 });
+
+test("report-card preview preserves the selected student through sign-in",async({page})=>{
+ const path="/teacher/classes/advisory-50000000-0000-4000-8000-000000000001?tab=report-cards&student=80000000-0000-4000-8000-000000000001";
+ await page.goto(path);await expect(page).toHaveURL(/\/login/);
+ expect(new URL(page.url()).searchParams.get("next")).toBe(path);
+ await expect(page.locator('input[name="next"]')).toHaveValue(path);
+ await expect(page.getByLabel("Student",{exact:true})).toHaveCount(0);
+});

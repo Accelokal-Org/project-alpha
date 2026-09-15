@@ -251,6 +251,7 @@ correct_returned_assessment_scores: { Args: { target: string; expected_version: 
 class_grade_review: { Args: { target_class: string }; Returns: { offering_id: string; subject: string; period_id: string | null; period_name: string | null; status: string; revision: number | null }[] };
 set_grade_lock: { Args: { target: string; expected_version: number; lock_record: boolean; reason: string }; Returns: undefined };
 school_grade_completion: { Args: { target_school: string; target_year: string; page_number: number; status_filter: string }; Returns: Json };
+preview_report_card: { Args: { target_class: string; target_student: string }; Returns: Json };
 can_review_grades: { Args: { offering: string }; Returns: boolean };
 review_period_grades: { Args: { target: string; expected_version: number; decision: string; reason: string }; Returns: undefined };
 resubmit_period_grades: { Args: { target: string; expected_version: number; expected_token: string; correction_note: string }; Returns: undefined };

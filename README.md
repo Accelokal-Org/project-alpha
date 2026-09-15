@@ -85,3 +85,5 @@ School-controlled grade calculation and teacher submission: [setup and workflow]
 Adviser review, return reasons and teacher resubmission: [setup and workflow](docs/grade-review.md).
 
 Adviser lock/unlock and school grade completion: [setup and workflow](docs/grade-completion.md).
+
+Staff-only report-card completeness and preview: [setup and workflow](docs/report-card-preview.md).

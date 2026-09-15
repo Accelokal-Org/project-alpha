@@ -171,3 +171,36 @@ it("paginates dashboard rows while retaining full counts and flags classes witho
  expect(first.total).toBe(62);expect(first.rows).toHaveLength(50);expect(second.rows).toHaveLength(12);expect(first.empty_classes).toBe(1);expect(first.ready).toBe(false);
  expect(new Set([...first.rows,...second.rows].map(r=>r.offering_id)).size).toBe(62);
 });
+
+const reportClass="50000000-0000-4000-8000-000000000001";
+async function report(n=6,target=student,classId=reportClass){return (await actor(n,"select public.preview_report_card($1,$2) report",[classId,target])).rows[0].report as {ready:boolean;incomplete:number;rows:{offering_id:string;period_id:string|null;grade:number|null;check_status:string}[];student:{id:string}};}
+it("previews only locked grades and flags missing periods without calculating an annual average",async()=>{
+ await assignAdviser();const s=await submitted();await review(s.id,1,"reviewed","");await changeLock(s.id,2,true);
+ const p=await report();expect(p.ready).toBe(false);expect(p.rows.find(r=>r.period_id===s.period)?.grade).toBe(50);expect(p.rows.some(r=>r.check_status==="submission_missing")).toBe(true);
+ expect(p).not.toHaveProperty("average");expect(p.student.id).toBe(student);
+ await changeLock(s.id,3,false,"Review needed");const unlocked=await report();expect(unlocked.rows.find(r=>r.period_id===s.period)).toMatchObject({grade:null,check_status:"not_locked"});
+});
+it("recognizes complete zero grades but flags a student absent from a locked snapshot",async()=>{
+ await assignAdviser();const s=await submitted();await review(s.id,1,"reviewed","");await changeLock(s.id,2,true);
+ const second=(await db.query<{id:string}>("select id from public.grading_periods where scheme_id=$1 and id<>$2",[s.scheme,s.period])).rows[0].id;
+ await db.query("insert into public.grade_submissions(offering_id,scheme_id,period_id,snapshot,status) values($1,$2,$3,$4,'locked')",[offering,s.scheme,second,JSON.stringify({students:[{id:student,grade:0}]})]);
+ const p=await report();expect(p.ready).toBe(true);expect(p.rows.find(r=>r.period_id===second)?.grade).toBe(0);
+ await db.exec(`insert into public.subject_enrollments values('${school}','${offering}','80000000-0000-4000-8000-000000000002')`);
+ const missing=await report(6,"80000000-0000-4000-8000-000000000002");expect(missing.ready).toBe(false);expect(missing.rows.every(r=>r.check_status==="grade_missing"&&r.grade===null)).toBe(true);
+});
+it("flags enrollment exceptions and includes independent subject enrollment without exposing peer grades",async()=>{
+ await assignAdviser();const s=await submitted();await review(s.id,1,"reviewed","");await changeLock(s.id,2,true);
+ const otherOffering="70000000-0000-4000-8000-000000000002";
+ await db.exec(`insert into public.subject_enrollments values('${school}','${otherOffering}','${student}');insert into public.subject_gradebooks values('${otherOffering}','${school}','${s.scheme}');`);
+ await db.query("insert into public.grade_submissions(offering_id,scheme_id,period_id,snapshot,status) values($1,$2,$3,$4,'locked')",[otherOffering,s.scheme,s.period,JSON.stringify({students:[{id:student,grade:65},{id:"80000000-0000-4000-8000-000000000007",grade:88}]})]);
+ const p=await report();expect(p.rows.find(r=>r.offering_id===otherOffering&&r.period_id===s.period)?.grade).toBe(65);expect(JSON.stringify(p)).not.toContain("80000000-0000-4000-8000-000000000007");expect(JSON.stringify(p)).not.toContain('"grade":88');
+ expect((await report(6,"80000000-0000-4000-8000-000000000002")).rows.filter(r=>r.offering_id===offering).every(r=>r.check_status==="enrollment_review"&&r.grade===null)).toBe(true);
+});
+it("restricts reports to assigned advisers and school heads, including revocation and wrong-class requests",async()=>{
+ await assignAdviser();for(const n of [1,2,3])await expect(report(n)).rejects.toThrow(/adviser or school head/);
+ expect((await report(4)).student.id).toBe(student);expect((await report(5)).student.id).toBe(student);
+ await expect(report(6,"80000000-0000-4000-8000-000000000007")).rejects.toThrow(/not enrolled/);
+ await expect(report(6,student,"50000000-0000-4000-8000-000000000002")).rejects.toThrow();
+ await db.exec(`delete from public.school_memberships where user_id='${uid(6)}'`);await expect(report()).rejects.toThrow(/adviser or school head/);
+ await db.exec("set role anon");try{await expect(db.query("select public.preview_report_card($1,$2)",[reportClass,student])).rejects.toThrow(/permission denied/);}finally{await db.exec("reset role");}
+});
