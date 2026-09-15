@@ -46,4 +46,4 @@ The advisory overview shows up to 1,000 subject-period rows. Before a subject's 
 
 RLS limits snapshots and reasons to authorized subject staff. Student-only accounts cannot access grade-review records. Direct authenticated writes remain disabled; review decisions, corrections, resubmissions and history updates are atomic database operations. Assignment revocation takes effect on subsequent requests.
 
-Adviser locking/unlocking, school-wide completion dashboards, student grade release and correction of grading rules remain subsequent work. Reviewed status records a review; it is not a lock or a release.
+[Adviser locks and the school completion dashboard](grade-completion.md) are available through the next migration. Reviewed status records a review; locking remains an explicit action. Student grade release and correction of grading rules remain subsequent work.

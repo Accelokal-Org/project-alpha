@@ -130,3 +130,44 @@ it("rejects resubmission without return, unauthorized corrections and stale reca
  await expect(actor(1,"select public.resubmit_period_grades($1,2,$2,'Fix')",[s.id,initial.token])).rejects.toThrow(/changed/);
  expect((await db.query("select count(*)::integer n from public.grade_submission_versions where submission_id=$1",[s.id])).rows[0]).toEqual({n:1});
 });
+
+const changeLock=(id:string,version:number,locked:boolean,reason="",n=6)=>actor(n,"select public.set_grade_lock($1,$2,$3,$4)",[id,version,locked,reason]);
+it("locks only reviewed grades and requires reasoned adviser unlock before return",async()=>{
+ await assignAdviser();const s=await submitted();
+ await expect(changeLock(s.id,1,true)).rejects.toThrow(/Only reviewed/);
+ await review(s.id,1,"reviewed","");
+ for(const n of [1,2,3,4,5])await expect(changeLock(s.id,2,true,"",n)).rejects.toThrow(/Assigned adviser/);
+ await changeLock(s.id,2,true);await expect(review(s.id,3,"returned","Fix")).rejects.toThrow(/not awaiting/);
+ const p=await preview(s.period);await expect(actor(1,"select public.resubmit_period_grades($1,3,$2,'Fix')",[s.id,p.token])).rejects.toThrow(/returned/);
+ await expect(changeLock(s.id,2,false,"Fix")).rejects.toThrow(/changed/);
+ await expect(changeLock(s.id,3,false," ")).rejects.toThrow(/reason/);
+ await changeLock(s.id,3,false,"Recheck assessment evidence");
+ expect((await db.query("select status,review_version,revision from public.grade_submissions where id=$1",[s.id])).rows[0]).toEqual({status:"reviewed",review_version:4,revision:1});
+ await review(s.id,4,"returned","Please correct scores");
+ expect((await actor(6,"select action,reason from public.grade_review_events where submission_id=$1 and action='unlocked'",[s.id])).rows[0]).toEqual({action:"unlocked",reason:"Recheck assessment evidence"});
+ expect((await db.query("select count(*)::integer n from public.grade_submission_versions where submission_id=$1",[s.id])).rows[0]).toEqual({n:1});
+});
+it("revoked adviser assignment cannot unlock and locked corrections remain blocked",async()=>{
+ await assignAdviser();const s=await submitted();await review(s.id,1,"reviewed","");await changeLock(s.id,2,true);
+ await expect(actor(1,"select public.correct_returned_assessment_scores($1,3,$2,'Fix')",[s.a,JSON.stringify([{student_id:student,score:8}])])).rejects.toThrow(/return/);
+ await db.exec("update public.classes set adviser_teacher_id=null where id='50000000-0000-4000-8000-000000000001'");
+ await expect(changeLock(s.id,3,false,"Recheck")).rejects.toThrow(/Assigned adviser/);
+});
+it("shows school-wide counts without treating unknown periods as complete and enforces head access",async()=>{
+ await assignAdviser();const s=await submitted();await review(s.id,1,"reviewed","");await changeLock(s.id,2,true);
+ const result=(await actor(4,"select public.school_grade_completion($1,$2,0,'') report",[school,year])).rows[0].report as {counts:Record<string,number>;total:number;unconfigured_subjects:number;ready:boolean};
+ expect(result.counts.locked).toBe(1);expect(result.total).toBe(3);expect(result.unconfigured_subjects).toBe(1);expect(result.ready).toBe(false);
+ for(const n of [1,2,3,6])await expect(actor(n,"select public.school_grade_completion($1,$2,0,'')",[school,year])).rejects.toThrow(/School head/);
+ await expect(actor(4,"select public.school_grade_completion($1,$2,0,'')",[school,"20000000-0000-4000-8000-000000000099"])).rejects.toThrow(/year not available/);
+ const filtered=(await actor(5,"select public.school_grade_completion($1,$2,0,'locked') report",[school,year])).rows[0].report as {filtered_total:number;rows:unknown[];total:number};
+ expect(filtered.filtered_total).toBe(1);expect(filtered.rows).toHaveLength(1);expect(filtered.total).toBe(3);
+});
+it("paginates dashboard rows while retaining full counts and flags classes without offerings",async()=>{
+ await db.exec(`insert into public.subjects(id,school_id,code,name) select ('98000000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid,'${school}','C'||n,'Subject '||n from generate_series(1,60)n;
+ insert into public.subject_offerings(school_id,class_id,subject_id) select '${school}','50000000-0000-4000-8000-000000000001',id from public.subjects where code like 'C%';
+ insert into public.classes(school_id,school_year_id,grade_level_id,name) values('${school}','${year}','30000000-0000-4000-8000-000000000001','Empty class');`);
+ const first=(await actor(4,"select public.school_grade_completion($1,$2,0,'') report",[school,year])).rows[0].report as {total:number;rows:{offering_id:string}[];empty_classes:number;ready:boolean};
+ const second=(await actor(4,"select public.school_grade_completion($1,$2,1,'') report",[school,year])).rows[0].report as typeof first;
+ expect(first.total).toBe(62);expect(first.rows).toHaveLength(50);expect(second.rows).toHaveLength(12);expect(first.empty_classes).toBe(1);expect(first.ready).toBe(false);
+ expect(new Set([...first.rows,...second.rows].map(r=>r.offering_id)).size).toBe(62);
+});

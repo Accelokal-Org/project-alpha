@@ -80,3 +80,11 @@ test("adviser review and historical grades preserve their destination through si
   await expect(page.getByRole("button",{name:"Save review decision"})).toHaveCount(0);
  }
 });
+
+test("completion dashboard preserves school, year and status during sign-in",async({page})=>{
+ const path="/teacher?view=completion&school=10000000-0000-4000-8000-000000000001&year=20000000-0000-4000-8000-000000000001&status=locked&page=1";
+ await page.goto(path);await expect(page).toHaveURL(/\/login/);
+ expect(new URL(page.url()).searchParams.get("next")).toBe(path);
+ await expect(page.locator('input[name="next"]')).toHaveValue(path);
+ await expect(page.getByRole("button",{name:"Unlock grades"})).toHaveCount(0);
+});

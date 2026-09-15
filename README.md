@@ -83,3 +83,5 @@ Grading periods, component weights, approval and assessment classification: [set
 School-controlled grade calculation and teacher submission: [setup and workflow](docs/grade-submission.md).
 
 Adviser review, return reasons and teacher resubmission: [setup and workflow](docs/grade-review.md).
+
+Adviser lock/unlock and school grade completion: [setup and workflow](docs/grade-completion.md).
