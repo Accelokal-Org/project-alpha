@@ -67,3 +67,7 @@ See [setup and milestones](docs/implementation.md) and [the codebase map](codex.
 ## Email delivery
 
 See [Resend email provider setup](docs/email-provider.md) for Supabase custom SMTP configuration and the remaining invitation/recovery workflow scope.
+
+## Assessments and scores
+
+Teachers can create subject assessments, save draft scores and explicitly publish individual results to students. Apply the [assessment migration and setup](docs/assessments.md) before deploying this workflow.

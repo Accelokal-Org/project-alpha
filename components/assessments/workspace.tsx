@@ -1,0 +1,11 @@
+import Link from "@/components/ui/navigation-link";
+import {getAssessments} from "@/features/assessments/queries";
+import {CreateAssessmentForm} from "./create-form";
+import {ScoreEditor} from "./score-editor";
+import type {RosterStudent} from "@/features/classes/types";
+export async function AssessmentWorkspace({offering,selected,students}:{offering:string;selected?:string;students:RosterStudent[]}){
+ const data=await getAssessments(offering,selected);
+ return <><section className="bg-white border border-border rounded-lg overflow-hidden"><h2 className="font-semibold p-5 border-b border-border">Assessments <span className="text-xs text-muted font-normal">· Most recent 100</span></h2>{data.list.length?<div className="overflow-auto"><table className="w-full"><caption className="sr-only">Subject assessments</caption><thead><tr><th>Assessment</th><th>Date</th><th>Maximum</th><th>Status</th></tr></thead><tbody>{data.list.map(a=><tr key={a.id}><td><Link className="text-primary font-medium" aria-current={a.id===selected?"page":undefined} href={`/teacher/classes/${offering}?tab=assessments&assessment=${a.id}`}>{a.title}</Link></td><td>{a.assessment_date}</td><td>{a.max_score}</td><td>{a.published_at?"Published":"Draft"}</td></tr>)}</tbody></table></div>:<p className="p-6 text-muted">No assessments yet.</p>}</section>
+ {data.selected?<><Link href={`/teacher/classes/${offering}?tab=assessments`} className="text-primary text-sm inline-block mt-5">Close assessment / create another</Link><ScoreEditor key={data.selected.id} assessment={data.selected} students={students} scores={data.scores} canManage={data.canManage}/></>:data.canManage?<CreateAssessmentForm offering={offering}/>:<p className="mt-5 text-muted">Only an assigned subject teacher can create assessments. Your current access is read-only.</p>}
+ </>;
+}

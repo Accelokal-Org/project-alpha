@@ -60,8 +60,8 @@
 - Full live Auth/PostgREST validation remains outstanding. Docker is not available locally. Embedded PostgreSQL checks do not verify hosted Auth/cookies.
 
 ## Scope and guardrails
-- Implemented: authentication, teacher/advisory assignments and rosters, student landing, school/admin setup, account linking, setup audit.
-- Deferred: assessments/scores/publication, attendance, lesson plans, schedules, grading, interventions, report-card workflows; billing and password recovery remain reserved for later; invitations are now implemented.
+- Implemented: authentication, teacher/advisory assignments and rosters, assessment drafts/manual scoring/publication, personal student results, school/admin setup, invitations/account linking and audit.
+- Deferred: attendance, lesson plans, schedules, grading, interventions, report-card workflows; billing and password recovery remain reserved for later; invitations are now implemented.
 - Do not implement LMS, messaging, native AI, imports, attendance scanning or report-card designer.
 - Never commit secrets or real student data. Ordinary authenticated table writes remain disabled; setup mutations are operation-specific manager-checked atomic RPCs.
 - School lists currently cap at 200 and query responses at Supabase's 1,000-row limit; add server pagination before larger deployments.
@@ -102,3 +102,16 @@
 - `components/admin/school-switcher.tsx` replaces the native GET reload with router navigation and pending feedback. `components/retry-error.tsx` adds pending retry controls; root/account error boundaries now complement existing school/admin boundaries.
 - CSS adds restrained hover/focus transitions with reduced-motion override. Local roster filtering remains immediate and retains its live result counts.
 - Validation: Webpack production build, lint, standalone typecheck and whitespace checks passed. Six production-browser checks passed, including delayed navigation, pending/disabled submission and failed-request recovery. Requests were intercepted; no hosted email/database mutations occurred. Changes remain local; no migration needed.
+
+## Assessments and manual scores (2026-09-15)
+- User authorized the next teacher workflow from the implementation guide: create assessment, save/review manual scores, explicitly publish, student own-result visibility.
+- Migration `supabase/migrations/202609150001_assessments.sql` adds assessments, score rows, audit events, read policies and fixed create/save/publish RPCs. Requires an assigned teacher profile and TEACHER membership for writes; administrator/head/adviser access alone is read-only. Roles remain cumulative.
+- Student table queries cannot read drafts or classmates through the student projection. `my_published_scores()` explicitly applies own_student even for mixed-role users. Staff read scope follows existing authorized offering access.
+- Score batches validate two-decimal range, subject enrollment and duplicates; null clears an unrecorded score and zero remains a real value. Row locks + expected version protect concurrent saves/publication; mutations and audit are atomic. Published assessments are immutable via application RPCs.
+- `features/assessments/`: Zod schemas, caller-session Server Actions and staff queries. No elevated clients. `components/assessments/`: create form, assessment list and manual score editor with existing loading/feedback primitives.
+- Subject roster page now has Student roster / Assessments navigation (`?tab=assessments&assessment=<UUID>`); advisory-only pages remain rosters. Student portal shows own published results.
+- Publication requires saved scores and an explicit review checkbox. Unsaved changes disable publishing. Partial publication releases recorded scores only; missing scores cannot be added after publication in this release.
+- Bounds: score editor 500 students with explicit blocking message; lists show most recent 100. Max score positive <=100000, at most two decimal places. Metadata edits, deletion, corrections/reopening, absent/exempt codes and grade calculations are deferred.
+- `docs/assessments.md` contains deployment and workflow instructions; apply migration in the connected Supabase project then deploy. No new env variables. Hosted migration and live teacher/student Auth validation remain pending; no academic records or emails changed externally.
+- Offline database types regenerated and RPC generator updated for assessment operations.
+- Validation: 66 unit/integration checks passed, including SQL draft privacy, own-result publication, read-only published records, unauthorized/direct-write denial, batch rollback, stale versions, blank/zero semantics and revocation. Seven production-browser checks passed, including assessment deep-link sign-in preservation. Typecheck, lint, final Webpack production build and whitespace checks passed. Browser Chromium cache was reinstalled in /tmp after the prior cache was missing. Authenticated score-entry UI and hosted PostgREST remain unverified without live credentials; SQL workflow exercised in isolated PostgreSQL.

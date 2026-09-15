@@ -29,6 +29,11 @@ output += `}; Views: Record<never, never>; Functions: {
 staff_offerings: { Args: Record<never, never>; Returns: Database["public"]["Tables"]["subject_offerings"]["Row"][] };
 is_app_manager: { Args: Record<never, never>; Returns: boolean };
 admin_setup: { Args: { operation: string; payload: Json }; Returns: Json };
+can_manage_assessments: { Args: { offering: string }; Returns: boolean };
+create_assessment: { Args: { offering: string; title: string; assessment_date: string; max_score: number }; Returns: string };
+save_assessment_scores: { Args: { target: string; expected_version: number; entries: Json }; Returns: undefined };
+publish_assessment: { Args: { target: string; expected_version: number }; Returns: undefined };
+my_published_scores: { Args: Record<never, never>; Returns: { assessment_id: string; title: string; assessment_date: string; subject: string; class_name: string; school: string; score: number; max_score: number; published_at: string }[] };
 admin_accounts: { Args: { target_school: string }; Returns: { user_id: string; email: string; role: SchoolRole }[] };
 admin_invite_access: { Args: { target_school: string; account_email: string; account_roles: SchoolRole[]; profile?: string; invited_user?: string }; Returns: undefined };
 }; Enums: { school_role: SchoolRole }; CompositeTypes: Record<never, never> } };\n`;

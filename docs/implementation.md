@@ -4,13 +4,13 @@ Product identity: **Deskonekt — Your classes. Your work. One desk. — by Acce
 
 ## Scope
 
-Implemented the first recommended slice: authentication → teacher assignment → student roster. Includes an adviser’s whole-class roster and a minimal student landing page that returns only the authenticated student’s profile and class. The separate [superadmin area](superadmin.md) now supports school setup, account connections, setup audit history. Dedicated school-head administration is still a later milestone.
+Implemented authentication → teacher assignment → student roster, followed by assessment creation → draft scores → explicit publication → personal student results. Includes an adviser’s whole-class roster and a minimal student landing page that returns only the authenticated student’s profile and class. The separate [superadmin area](superadmin.md) now supports school setup, account connections, setup audit history. Dedicated school-head administration is still a later milestone.
 
 The application has no public preview or sample-data generation controls. Automated fixtures remain isolated under tests and do not seed the application database.
 
 ## Teacher workspace
 
-The teacher landing page includes subject/advisory assignment totals and unique class-section counts. Teachers can search class names, subjects and codes, combine school/year/responsibility filters, and open authorized rosters. No new migration is required for this workspace iteration. Attendance, assessments and lesson plans remain subsequent slices.
+The teacher landing page includes subject/advisory assignment totals and unique class-section counts. Teachers can search class names, subjects and codes, combine school/year/responsibility filters, and open authorized rosters. No new migration is required for this workspace iteration. Subject pages now include [assessments and manual scoring](assessments.md). Attendance and lesson plans remain subsequent slices.
 
 ## Architecture
 
@@ -37,7 +37,7 @@ No hosted Supabase project or Vercel deployment was created during this initial 
 ## Next vertical slices
 
 1. Extend the implemented superadmin setup with edit/removal/revocation flows and school-head approval boundaries when needed. Invitations and password setup are implemented; keep billing for later.
-2. Teacher creates assessment → records and reviews manual scores → explicitly publishes → student receives only their published score. Add separate student-safe projections and RLS tests before the student score UI.
+2. Implemented: teacher creates assessment → saves/reviews manual draft scores → explicitly publishes → student receives only their own published score. Includes separate student projection, RLS and mutation-boundary tests; see [assessment setup](assessments.md).
 3. Configurable attendance → recording/history → student sees own attendance only.
 4. Lesson plans and reusable templates → upcoming dashboard items.
 5. Configurable grade components → approval → calculation → submission → adviser lock/unlock → school-head completion view.
@@ -47,7 +47,7 @@ No hosted Supabase project or Vercel deployment was created during this initial 
 
 ## Deliberate limitations
 
-- No scoring, attendance, schedule, grade, intervention, scanner, template or report-card workflows yet. No placeholders pretend those actions are complete.
+- Assessment/manual scoring is implemented. No attendance, schedule, grade calculation, intervention, scanner, template or report-card workflows yet. No placeholders pretend those actions are complete.
 - Schema installation and the first superadmin still need one-time operator setup. School records and assignments are now managed through the superadmin UI.
 - The first repository query layer assumes a small school; Supabase’s 1,000-row API cap must be replaced with explicit server pagination for larger deployments. Roster UI pagination only paginates the returned roster.
 - No real end-to-end Auth session was available without starting Supabase. Embedded PostgreSQL tests cover schema/RLS, not Auth, cookie refresh, or PostgREST configuration.
