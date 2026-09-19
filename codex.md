@@ -35,7 +35,7 @@
 - `scripts/bootstrap-admin.mjs`: first-superadmin creation for a new Auth email; refuses an existing platform admin. Requires URL, service-role key, bootstrap email/password (12+ characters). Remove bootstrap password after use.
 - `tests/fixtures/school.sql`: isolated embedded PostgreSQL fixture, never loaded into Supabase by application/reset workflows.
 - `tests/`: auth, permissions, RLS, setup and sample-cleanup regression checks. No live test-school generator remains.
-- `assets/brand/app-icons/`: original icon submissions. `public/brand/deskonekt-icon-{light,dark}.png` are unchanged supplied copies; `app/icon.png` is the supplied favicon.
+- `assets/brand/app-icons/`: original icon submissions. `public/brand/deskonekt-icon-{light,dark}-transparent.png` are unchanged supplied copies; `app/icon.png` is the supplied favicon.
 - `docs/implementation.md`, `docs/superadmin.md`, `docs/sample-data-removal.md`: scope, setup and hosted cleanup instructions.
 
 ## Routes
@@ -207,3 +207,9 @@
 - `docs/school-account-imports.md`, README, invitation guide, implementation guide and offline type generator/types updated. Apply ONLY new migration then deploy; existing APP_URL, server Supabase key, redirect allowlist, invite template and Resend SMTP remain prerequisites. No hosted migrations, real-user records, emails or deployments performed.
 - Validation so far: 142 unit/integration checks passed, production build passed. Tests cover parsing/mixed roles, transactional duplicate rollback, tenant/role denial, direct writes, service-only finalization, duplicate claims, stale authority, existing-account review, rate-limit/unknown-delivery handling, and account profile metadata. Final browser/lint/type checks recorded below when complete. Authenticated UI and hosted Auth/SMTP remain unverified.
 - Final validation: 16 production-browser checks passed after restoring the missing temporary Chromium cache; lint, standalone typecheck, Webpack production build and whitespace checks passed. Browser scope is unauthenticated protection/destination preservation, the blank CSV template and existing feedback flows. No live delivery or authenticated import UI was exercised.
+
+## Background-removed branding assets (2026-09-20)
+- Replaced school sign-in, teacher/student workspace headers, superadmin sign-in/header and browser favicon with the supplied removebg PNG variants. Artwork is copied unchanged; dimensions match existing image component declarations.
+- Public header asset filenames now include `-transparent` to avoid reusing cached versions of the old images. `app/icon.png` remains the Next metadata favicon convention. Removed obsolete public copies; original submissions remain in assets/brand/app-icons.
+- Updated asset README mapping. Supplied dark variant retains its navy rounded tile; its surrounding pixels are transparent. The horizontal lockup has no existing website usage and remains available as source artwork.
+- Validation: verified byte-for-byte matches for all three supplied PNGs, checked alpha channels/dimensions, and passed TypeScript and whitespace checks. No deployment performed.

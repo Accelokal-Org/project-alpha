@@ -18,9 +18,9 @@ metadata and interface.
 
 ## Applied assets
 
-- `app_icon_light.png` → `public/brand/deskonekt-icon-light.png`: workspace header.
-- `app_icon_dark.png` → `public/brand/deskonekt-icon-dark.png`: sign-in branding.
-- `icon:favicon.png` → `app/icon.png`: browser favicon, registered through Next.js metadata conventions.
+- `app_icon_light-removebg-preview.png` → `public/brand/deskonekt-icon-light-transparent.png`: workspace header.
+- `app_icon_dark-removebg-preview.png` → `public/brand/deskonekt-icon-dark-transparent.png`: sign-in branding.
+- `icon_favicon-removebg-preview (4).png` → `app/icon.png`: browser favicon, registered through Next.js metadata conventions.
 
 These are unchanged copies of the supplied artwork. The banner and horizontal
 lockup variants remain available here for future brand surfaces.

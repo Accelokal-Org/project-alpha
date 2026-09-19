@@ -10,7 +10,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
  const configured = isSupabaseConfigured();
  return <main className="min-h-screen grid lg:grid-cols-[1fr_1.15fr]">
   <section className="bg-navy text-white px-8 py-12 lg:p-16 flex flex-col justify-between gap-16">
-   <Link href="/login" className="flex items-center gap-3 text-xl font-semibold tracking-tight"><Image src="/brand/deskonekt-icon-dark.png" alt="" width={398} height={390} className="h-14 w-auto shrink-0" sizes="58px" /> {brand.name}</Link>
+   <Link href="/login" className="flex items-center gap-3 text-xl font-semibold tracking-tight"><Image src="/brand/deskonekt-icon-dark-transparent.png" alt="" width={398} height={390} className="h-14 w-auto shrink-0" sizes="58px" /> {brand.name}</Link>
    <div className="max-w-md"><p className="text-cyan-300 text-xs font-semibold tracking-[.16em] uppercase mb-5">Academic workspace</p><h1 className="text-3xl lg:text-4xl font-semibold leading-tight max-w-sm">{brand.tagline}</h1><p className="text-sm text-cyan-300 mt-4">{brand.byline}</p><p className="text-slate-300 leading-relaxed mt-6">A seamless academic workspace built around the teacher.</p><div className="h-px bg-white/15 my-8" /><p className="text-sm text-slate-300 flex gap-3 items-center"><ShieldCheck size={18} className="text-cyan-300 shrink-0" /> Access is scoped to your school and assignments.</p></div>
    <p className="text-xs text-slate-400">Built around your day-to-day academic work.</p>
   </section>
