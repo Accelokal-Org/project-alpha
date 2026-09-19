@@ -87,3 +87,5 @@ Adviser review, return reasons and teacher resubmission: [setup and workflow](do
 Adviser lock/unlock and school grade completion: [setup and workflow](docs/grade-completion.md).
 
 Staff-only report-card completeness and preview: [setup and workflow](docs/report-card-preview.md).
+
+Saved report-card versions and staff approval: [setup and workflow](docs/report-card-versions.md).

@@ -1,0 +1,9 @@
+"use client";
+import {useActionState} from "react";
+import {saveReport,approveReport} from "@/features/report-cards/actions";
+import {SubmitButton} from "@/components/ui/submit-button";
+import {ActionFeedback} from "@/components/ui/feedback";
+export function ReportVersionForm({classId,student,target,version,token,approve=false}:{classId:string;student:string;target?:string;version:number;token:string;approve?:boolean}){
+ const [state,action,pending]=useActionState(approve?approveReport:saveReport,{});
+ return <form action={action} aria-busy={pending} className="bg-white border border-border rounded-lg p-5 space-y-4"><h3 className="font-semibold text-navy">{approve?`Approve saved version ${version}`:"Save report-card version"}</h3><input type="hidden" name="class" value={classId}/><input type="hidden" name="student" value={student}/><input type="hidden" name="target" value={target??""}/><input type="hidden" name="version" value={version}/><input type="hidden" name="token" value={token}/><p className="text-sm text-muted">{approve?"Approval applies to this exact saved version. The server checks that its grades and enrollment still match the current preview. Approval does not release it to the student.":"Save a fixed copy of this preview for school review. Incomplete versions can be saved, but all checks must pass before approval. Earlier saved versions remain unchanged."}</p><label className="flex items-start gap-2 text-sm"><input name="confirmed" type="checkbox" required disabled={pending} className="!w-4 mt-1"/>{approve?"I reviewed the saved version and approve it for the school’s records.":"I reviewed the preview and want to save this version."}</label><ActionFeedback pending={pending} error={state.error} success={state.success}/><SubmitButton pendingLabel={approve?"Approving…":"Saving version…"} disabled={pending}>{approve?"Approve report-card version":"Save new version"}</SubmitButton></form>;
+}

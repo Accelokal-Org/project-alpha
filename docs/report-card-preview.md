@@ -46,6 +46,6 @@ A preview is complete only when at least one subject-period row exists and all r
 
 The database RPC verifies adviser/head access and the student's class membership before reading data. For independent subject enrollment, it returns only the selected student's grade from each snapshot, never classmates' grades, component score lists or staff correction reasons. Current role/assignment checks apply to every request. Student-only callers and anonymous callers are denied.
 
-The preview is read-only and live. It is not a saved report card, printable official document or student-visible result. Staff approval, reasoned overrides/exemptions, durable report-card versions, explicit student release and the visual report-card designer remain deferred.
+The preview is read-only and live. It is not a saved report card, printable official document or student-visible result. [Saved versions and staff approval](report-card-versions.md) are available in the next migration. Reasoned overrides/exemptions, explicit student release and the visual report-card designer remain deferred.
 
 There is a database-enforced limit of 200 subject offerings per student preview. The class selector uses the existing roster query and its existing Supabase row limit. Grade rows are assembled in one PostgreSQL JSON response, avoiding row-cap truncation of periods. No external SQL or academic-data changes were performed during local implementation.

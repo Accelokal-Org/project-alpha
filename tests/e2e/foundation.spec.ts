@@ -96,3 +96,11 @@ test("report-card preview preserves the selected student through sign-in",async(
  await expect(page.locator('input[name="next"]')).toHaveValue(path);
  await expect(page.getByLabel("Student",{exact:true})).toHaveCount(0);
 });
+
+ test("saved report version preserves its destination through sign-in",async({page})=>{
+ const path="/teacher/classes/advisory-50000000-0000-4000-8000-000000000001?tab=report-cards&student=80000000-0000-4000-8000-000000000001&report_version=2";
+ await page.goto(path);await expect(page).toHaveURL(/\/login/);
+ expect(new URL(page.url()).searchParams.get("next")).toBe(path);
+ await expect(page.locator('input[name="next"]')).toHaveValue(path);
+ await expect(page.getByRole("button",{name:"Approve report-card version"})).toHaveCount(0);
+});

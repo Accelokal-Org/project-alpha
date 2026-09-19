@@ -204,3 +204,60 @@ it("restricts reports to assigned advisers and school heads, including revocatio
  await db.exec(`delete from public.school_memberships where user_id='${uid(6)}'`);await expect(report()).rejects.toThrow(/adviser or school head/);
  await db.exec("set role anon");try{await expect(db.query("select public.preview_report_card($1,$2)",[reportClass,student])).rejects.toThrow(/permission denied/);}finally{await db.exec("reset role");}
 });
+
+async function completeReportSources(){
+ await assignAdviser();const s=await submitted();await review(s.id,1,"reviewed","");await changeLock(s.id,2,true);
+ const second=(await db.query<{id:string}>("select id from public.grading_periods where scheme_id=$1 and id<>$2",[s.scheme,s.period])).rows[0].id;
+ await db.query("insert into public.grade_submissions(offering_id,scheme_id,period_id,snapshot,status) values($1,$2,$3,$4,'locked')",[offering,s.scheme,second,JSON.stringify({students:[{id:student,grade:70}]})]);
+ return s;
+}
+async function reportSource(n=6){return (await actor(n,"select public.report_card_source($1,$2) source",[reportClass,student])).rows[0].source as {token:string;snapshot:{ready:boolean;student:{name:string}}};}
+async function saveReportVersion(version:number,token:string,n=6){return actor(n,"select public.save_report_card($1,$2,$3,$4) version",[reportClass,student,version,token]);}
+async function reportId(){return (await db.query<{id:string}>("select id from public.report_cards where class_id=$1 and student_id=$2",[reportClass,student])).rows[0].id;}
+const approveReportVersion=(id:string,version:number,token:string,n=4)=>actor(n,"select public.approve_report_card($1,$2,$3)",[id,version,token]);
+it("saves fixed report versions and allows only school heads to approve complete current versions",async()=>{
+ await completeReportSources();const source=await reportSource();expect(source.snapshot.ready).toBe(true);
+ await saveReportVersion(0,source.token);const id=await reportId();
+ for(const n of [1,2,3,6])await expect(approveReportVersion(id,1,source.token,n)).rejects.toThrow(/School head/);
+ await approveReportVersion(id,1,source.token);
+ expect((await actor(4,"select approved_at is not null approved from public.report_card_versions where report_id=$1",[id])).rows[0]).toEqual({approved:true});
+ await expect(approveReportVersion(id,1,source.token)).rejects.toThrow(/not available/);
+ await expect(saveReportVersion(1,source.token)).rejects.toThrow(/already saved/);
+ expect((await actor(6,"select action from public.report_card_events where report_id=$1 order by created_at",[id])).rows.map(r=>r.action)).toEqual(["saved","approved"]);
+});
+it("allows incomplete saved drafts but blocks approval and forged or stale source tokens",async()=>{
+ await assignAdviser();const source=await reportSource();expect(source.snapshot.ready).toBe(false);
+ await expect(saveReportVersion(0,"forged")).rejects.toThrow(/source changed/);
+ expect((await db.query("select * from public.report_cards")).rows).toHaveLength(0);
+ await saveReportVersion(0,source.token);const id=await reportId();
+ await expect(approveReportVersion(id,1,source.token)).rejects.toThrow(/completeness/);
+ await expect(saveReportVersion(0,source.token)).rejects.toThrow(/version changed/);
+ expect((await db.query("select count(*)::integer n from public.report_card_versions where report_id=$1",[id])).rows[0]).toEqual({n:1});
+});
+it("detects changed names and source locks, preserves old versions and rejects older approvals",async()=>{
+ const s=await completeReportSources();const source=await reportSource();await saveReportVersion(0,source.token);const id=await reportId();
+ await db.query("update public.students set display_name='Updated student name' where id=$1",[student]);
+ await expect(approveReportVersion(id,1,source.token)).rejects.toThrow(/source changed/);
+ const updated=await reportSource();await saveReportVersion(1,updated.token);
+ await expect(approveReportVersion(id,1,source.token)).rejects.toThrow(/version changed/);
+ await approveReportVersion(id,2,updated.token);
+ const versions=(await actor(6,"select version,snapshot from public.report_card_versions where report_id=$1 order by version",[id])).rows;
+ expect((versions[0].snapshot as typeof source.snapshot).student.name).toBe(source.snapshot.student.name);
+ expect((versions[1].snapshot as typeof source.snapshot).student.name).toBe("Updated student name");
+ await changeLock(s.id,3,false,"Recheck evidence");const unlocked=await reportSource();expect(unlocked.token).not.toBe(updated.token);
+ await saveReportVersion(2,unlocked.token);await expect(approveReportVersion(id,3,unlocked.token)).rejects.toThrow(/completeness/);
+ expect((await db.query("select approved_at is not null approved from public.report_card_versions where report_id=$1 and version=2",[id])).rows[0]).toEqual({approved:true});
+});
+it("keeps saved reports private and denies unauthorized writes and revoked access",async()=>{
+ await completeReportSources();const source=await reportSource();await saveReportVersion(0,source.token);const id=await reportId();
+ for(const n of [1,2,3]){
+  await expect(saveReportVersion(1,source.token,n)).rejects.toThrow(/adviser or school head/);
+  expect((await actor(n,"select * from public.report_cards")).rows).toHaveLength(0);
+  expect((await actor(n,"select * from public.report_card_versions")).rows).toHaveLength(0);
+  expect((await actor(n,"select * from public.report_card_events")).rows).toHaveLength(0);
+ }
+ await expect(actor(4,"update public.report_card_versions set snapshot='{}'")).rejects.toThrow(/permission denied/);
+ await db.exec(`delete from public.school_memberships where user_id in ('${uid(4)}','${uid(6)}')`);
+ await expect(approveReportVersion(id,1,source.token)).rejects.toThrow(/School head/);await expect(saveReportVersion(1,source.token)).rejects.toThrow(/adviser or school head/);
+ await db.exec("set role anon");try{await expect(db.query("select public.save_report_card($1,$2,0,'x')",[reportClass,student])).rejects.toThrow(/permission denied/);}finally{await db.exec("reset role");}
+});

@@ -185,6 +185,31 @@ platform_admins: Table<{
 user_id: string;
 created_at: string;
 }>;
+report_card_events: Table<{
+id: string;
+report_id: string;
+version: number;
+action: string;
+actor_id: string | null;
+created_at: string;
+}>;
+report_card_versions: Table<{
+report_id: string;
+version: number;
+snapshot: Json;
+source_token: string;
+saved_by: string | null;
+saved_at: string;
+approved_by: string | null;
+approved_at: string | null;
+}>;
+report_cards: Table<{
+id: string;
+school_id: string;
+class_id: string;
+student_id: string;
+current_version: number;
+}>;
 school_memberships: Table<{
 school_id: string;
 user_id: string;
@@ -251,6 +276,9 @@ correct_returned_assessment_scores: { Args: { target: string; expected_version: 
 class_grade_review: { Args: { target_class: string }; Returns: { offering_id: string; subject: string; period_id: string | null; period_name: string | null; status: string; revision: number | null }[] };
 set_grade_lock: { Args: { target: string; expected_version: number; lock_record: boolean; reason: string }; Returns: undefined };
 school_grade_completion: { Args: { target_school: string; target_year: string; page_number: number; status_filter: string }; Returns: Json };
+report_card_source: { Args: { target_class: string; target_student: string }; Returns: Json };
+save_report_card: { Args: { target_class: string; target_student: string; expected_version: number; expected_token: string }; Returns: number };
+approve_report_card: { Args: { target: string; expected_version: number; expected_token: string }; Returns: undefined };
 preview_report_card: { Args: { target_class: string; target_student: string }; Returns: Json };
 can_review_grades: { Args: { offering: string }; Returns: boolean };
 review_period_grades: { Args: { target: string; expected_version: number; decision: string; reason: string }; Returns: undefined };

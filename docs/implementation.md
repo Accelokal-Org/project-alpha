@@ -40,14 +40,14 @@ No hosted Supabase project or Vercel deployment was created during this initial 
 2. Implemented: teacher creates assessment → saves/reviews manual draft scores → explicitly publishes → student receives only their own published score. Includes separate student projection, RLS and mutation-boundary tests; see [assessment setup](assessments.md).
 3. Implemented: configurable school attendance statuses → subject/date recording and correction history → student sees own saved attendance only. See [attendance setup](attendance.md).
 4. Implemented: lesson plans and reusable templates → upcoming teacher dashboard lessons. See [lesson-plan setup](lesson-plans.md).
-5. Implemented: named school-year grading schemes, periods, component weights, approval and assessment classification. See [grading setup](grading.md). Implemented next: [school calculation rules and teacher grade review/submission](grade-submission.md). Implemented: [adviser review, return and teacher resubmission](grade-review.md). Implemented: [adviser lock/unlock and school-head completion](grade-completion.md). Implemented: [staff report-card completeness and preview](report-card-preview.md). Next: report-card approval, reasoned overrides and explicit release.
+5. Implemented: named school-year grading schemes, periods, component weights, approval and assessment classification. See [grading setup](grading.md). Implemented next: [school calculation rules and teacher grade review/submission](grade-submission.md). Implemented: [adviser review, return and teacher resubmission](grade-review.md). Implemented: [adviser lock/unlock and school-head completion](grade-completion.md). Implemented: [staff report-card completeness and preview](report-card-preview.md). Implemented: [saved report-card versions and staff approval](report-card-versions.md). Next: reasoned overrides and explicit release.
 6. Configurable staff-only intervention rules and flags.
 7. Isolated answer-sheet generation/scanning/review pipeline, preserving manual entry.
 8. Report-card completeness validation, reasoned overrides and release boundary; defer visual designer.
 
 ## Deliberate limitations
 
-- Assessment/manual scoring is implemented. No timetable, intervention, scanner or report-card workflows yet. Grade calculation and submission are available; adviser controls and student grade release remain deferred. No placeholders pretend those actions are complete.
+- Assessment/manual scoring is implemented. No timetable, intervention or scanner workflows yet. Grade calculation, submission, adviser controls, report-card previews, saved versions and staff approval are available; student grade release remains deferred. No placeholders pretend those actions are complete.
 - Schema installation and the first superadmin still need one-time operator setup. School records and assignments are now managed through the superadmin UI.
 - The first repository query layer assumes a small school; Supabase’s 1,000-row API cap must be replaced with explicit server pagination for larger deployments. Roster UI pagination only paginates the returned roster.
 - No real end-to-end Auth session was available without starting Supabase. Embedded PostgreSQL tests cover schema/RLS, not Auth, cookie refresh, or PostgREST configuration.
