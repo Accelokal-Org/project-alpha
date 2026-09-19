@@ -104,3 +104,11 @@ test("report-card preview preserves the selected student through sign-in",async(
  await expect(page.locator('input[name="next"]')).toHaveValue(path);
  await expect(page.getByRole("button",{name:"Approve report-card version"})).toHaveCount(0);
 });
+
+test("school account import protects batch destinations and serves a blank template",async({page,request})=>{
+ const path="/teacher?view=accounts&school=10000000-0000-4000-8000-000000000001&batch=97000000-0000-4000-8000-000000000001";
+ await page.goto(path);await expect(page).toHaveURL(/\/login/);
+ expect(new URL(page.url()).searchParams.get("next")).toBe(path);
+ await expect(page.getByRole("button",{name:"Create users and prepare invitations"})).toHaveCount(0);
+ const response=await request.get("/templates/user-import.csv");expect(response.ok()).toBeTruthy();expect((await response.text()).trim()).toBe("Username,Last Name,First Name,Email,Role");
+});

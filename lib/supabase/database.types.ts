@@ -210,6 +210,22 @@ class_id: string;
 student_id: string;
 current_version: number;
 }>;
+school_account_imports: Table<{
+id: string;
+school_id: string;
+username: string;
+first_name: string;
+last_name: string;
+email: string;
+role: SchoolRole;
+profile_id: string;
+batch_id: string;
+status: string;
+created_by: string | null;
+created_at: string;
+updated_at: string;
+user_id: string | null;
+}>;
 school_memberships: Table<{
 school_id: string;
 user_id: string;
@@ -272,6 +288,9 @@ employee_code: string;
 display_name: string;
 }>;
 }; Views: Record<never, never>; Functions: {
+prepare_school_accounts: { Args: { target_school: string; entries: Json }; Returns: string };
+claim_school_invitation: { Args: { target: string }; Returns: Json };
+finish_school_invitation: { Args: { target: string; actor: string; outcome: string; invited_user?: string }; Returns: undefined };
 correct_returned_assessment_scores: { Args: { target: string; expected_version: number; entries: Json; reason: string }; Returns: undefined };
 class_grade_review: { Args: { target_class: string }; Returns: { offering_id: string; subject: string; period_id: string | null; period_name: string | null; status: string; revision: number | null }[] };
 set_grade_lock: { Args: { target: string; expected_version: number; lock_record: boolean; reason: string }; Returns: undefined };

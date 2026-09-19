@@ -89,3 +89,5 @@ Adviser lock/unlock and school grade completion: [setup and workflow](docs/grade
 Staff-only report-card completeness and preview: [setup and workflow](docs/report-card-preview.md).
 
 Saved report-card versions and staff approval: [setup and workflow](docs/report-card-versions.md).
+
+School-head CSV user creation and invitation batches: [setup and workflow](docs/school-account-imports.md).

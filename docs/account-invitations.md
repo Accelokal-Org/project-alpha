@@ -32,3 +32,5 @@ Expired/used links show a clear error. Already-configured users can sign in norm
 The service-role client is limited to the authorized invitation Auth API; academic records and school role writes use the administrator's JWT. The DB function rechecks authority and profile ownership before finalizing. Setup audit entries record role changes and invitation completion without tokens/passwords.
 
 No live invitation has been sent during implementation. Hosted migration, environment variables, email template and SMTP settings must be configured before the first real invitation.
+
+For school-head bulk creation from CSV, see [school account imports](school-account-imports.md). Existing single-account invitations and account linking remain available.
