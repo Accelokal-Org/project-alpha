@@ -1,3 +1,5 @@
+import {readFile} from "node:fs/promises";
+import {parseImport} from "../../features/account-imports/schema";
 import { expect, test } from "@playwright/test";
 test("sample workspace is removed", async ({ page }) => {
  const response = await page.goto("/preview");
@@ -111,4 +113,22 @@ test("school account import protects batch destinations and serves a blank templ
  expect(new URL(page.url()).searchParams.get("next")).toBe(path);
  await expect(page.getByRole("button",{name:"Create users and prepare invitations"})).toHaveCount(0);
  const response=await request.get("/templates/user-import.csv");expect(response.ok()).toBeTruthy();expect((await response.text()).trim()).toBe("Username,Last Name,First Name,Email,Role");
+});
+
+test("user template downloads as an Excel-compatible CSV and matches the importer",async({page,request})=>{
+ const response=await request.get("/templates/user-import.csv");
+ expect(response.headers()["content-disposition"]).toBe('attachment; filename="deskonekt-user-import.csv"');
+ expect(response.headers()["content-type"]).toContain("text/csv");
+ await page.goto("/login");
+ const downloading=page.waitForEvent("download");
+ await page.evaluate(()=>{const link=document.createElement("a");link.href="/templates/user-import.csv";document.body.append(link);link.click();link.remove();});
+ const download=await downloading;
+ expect(download.suggestedFilename()).toBe("deskonekt-user-import.csv");
+ expect(await download.failure()).toBeNull();
+ const path=await download.path();expect(path).not.toBeNull();
+ const bytes=await readFile(path!);
+ expect([...bytes.subarray(0,3)]).toEqual([0xef,0xbb,0xbf]);
+ expect(bytes.toString("utf8")).toBe("\uFEFFUsername,Last Name,First Name,Email,Role\r\n");
+ // Exercise the downloaded headers with one isolated row, never submitted to the application.
+ expect(parseImport(bytes.toString("utf8")+"teacher.one,Cruz,Ana,ana@example.test,TEACHER\r\n")).toEqual([{username:"teacher.one",last_name:"Cruz",first_name:"Ana",email:"ana@example.test",role:"TEACHER"}]);
 });

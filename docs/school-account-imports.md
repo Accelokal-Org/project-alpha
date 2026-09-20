@@ -5,7 +5,7 @@ Apply **only** `supabase/migrations/202609200001_school_account_imports.sql` aft
 ## Workflow
 
 1. Open **Teacher workspace → School accounts**, then choose the school. The link is available to school heads and platform managers, regardless of other roles they hold.
-2. Download the header-only CSV template. Fill in **Username, Last Name, First Name, Email, Role**, retaining the header order, and export as UTF-8 CSV from Excel or Google Sheets. XLSX files are not supported.
+2. Download the header-only CSV template. Fill in **Username, Last Name, First Name, Email, Role**, retaining the header order, and export as UTF-8 CSV from Excel or Google Sheets. XLSX files are not supported. The download is named `deskonekt-user-import.csv` and uses UTF-8 with a BOM and CRLF line endings for Excel compatibility.
 3. Use `TEACHER`, `ADVISER`, or `STUDENT` in Role. One role per row. Additional cumulative roles can be connected through existing superadmin Accounts controls. Importing privileged school-head or platform-manager roles is not permitted.
 4. Upload and review the parsed table. Confirm to create profiles and prepare invitations. Files are limited to 100 KB and 100 users. Validation rejects missing names, invalid emails/identifiers, duplicate rows and existing accounts/profile codes. Database conflicts roll back the entire preparation.
 5. Open the saved batch and choose **Send pending invitations**. Keep the page open; each user runs in a separate server request, with durable status between requests. No background worker continues after the page closes. Reopen a batch to resume pending rows.
