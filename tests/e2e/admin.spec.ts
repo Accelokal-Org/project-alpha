@@ -8,3 +8,9 @@ test("hidden admin route requires authentication and has a dedicated login",asyn
  await page.goto("/login");
  await expect(page.locator('a[href*="/deskonekt/admin"]')).toHaveCount(0);
 });
+test("school onboarding requires superadmin sign-in",async({page})=>{
+ await page.goto("/deskonekt/admin/setup");
+ await expect(page).toHaveURL(/\/deskonekt\/admin\/login$/);
+ await expect(page.getByRole("heading",{name:"Superadmin sign-in"})).toBeVisible();
+ await expect(page.getByLabel("Name of school",{exact:true})).toHaveCount(0);
+});

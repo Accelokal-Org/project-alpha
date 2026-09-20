@@ -66,3 +66,5 @@ Route loading boundaries show skeletons while pages resolve. Navigation links sh
 Subject workspaces now support date-based attendance using superadmin-configured school statuses. Corrections require staff-only reasons; student projections expose only personal saved marks. Apply the [attendance migration and configuration](attendance.md) before deployment.
 
 School account creation now supports [school-head CSV imports and invitation batches](school-account-imports.md), with per-row roles, profile creation and account setup.
+
+Implemented: [superadmin school onboarding](school-onboarding.md), combining school creation with School Head invitation/access and durable recovery status.

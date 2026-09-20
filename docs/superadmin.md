@@ -62,3 +62,5 @@ An account can retain multiple roles: connect its existing email to a teacher pr
 ## Grading setup
 
 The school Grading tab supports named school-year schemes, periods, component weights, saved-draft review and explicit approval. School heads access the same setup from the teacher workspace. Apply only the new migration for this release; see [grading setup and workflow](grading.md).
+
+Use **Set up school** to create a school and invite or connect its school head in one flow. See [school onboarding](school-onboarding.md).

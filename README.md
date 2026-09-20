@@ -91,3 +91,5 @@ Staff-only report-card completeness and preview: [setup and workflow](docs/repor
 Saved report-card versions and staff approval: [setup and workflow](docs/report-card-versions.md).
 
 School-head CSV user creation and invitation batches: [setup and workflow](docs/school-account-imports.md).
+
+School creation with school-head onboarding: [setup and workflow](docs/school-onboarding.md).

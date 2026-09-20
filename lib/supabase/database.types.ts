@@ -231,6 +231,18 @@ school_id: string;
 user_id: string;
 role: SchoolRole;
 }>;
+school_onboarding: Table<{
+id: string;
+school_id: string;
+school_name: string;
+head_email: string;
+first_name: string;
+last_name: string;
+status: string;
+created_by: string | null;
+created_at: string;
+updated_at: string;
+}>;
 school_years: Table<{
 id: string;
 school_id: string;
@@ -288,6 +300,9 @@ employee_code: string;
 display_name: string;
 }>;
 }; Views: Record<never, never>; Functions: {
+prepare_school_onboarding: { Args: { request_id: string; school_name: string; head_email: string; first_name: string; last_name: string }; Returns: Json };
+claim_school_onboarding: { Args: { target: string }; Returns: Json };
+finish_school_onboarding: { Args: { target: string; outcome: string; invited_user?: string }; Returns: undefined };
 prepare_school_accounts: { Args: { target_school: string; entries: Json }; Returns: string };
 claim_school_invitation: { Args: { target: string }; Returns: Json };
 finish_school_invitation: { Args: { target: string; actor: string; outcome: string; invited_user?: string }; Returns: undefined };
