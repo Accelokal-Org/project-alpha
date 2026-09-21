@@ -254,3 +254,9 @@
 - Visual QA rendered the actual components with production CSS in Chromium: desktop workspace,390px mobile roster and navigation icons inspected via screenshots in /tmp. Mobile had no horizontal overflow; reduced-motion computed animation was none. This was isolated rendering, not a live authenticated school session.
 - Production build, lint and standalone typecheck passed. No migration or hosted deployment required/performed. Updated docs/portal-navigation.md; final regression results follow.
 - Final checks:7 existing navigation unit checks and19 production-browser checks passed; whitespace check passed. The isolated local production server was stopped after verification.
+
+## Request usage and firewall preparation (2026-09-21)
+- Shared NavigationLink now defaults prefetch=false, preventing viewport/hover speculative page requests while keeping click navigation and pending feedback. Teacher page only loads assignments for teacher workspace/class views, avoiding unrelated queries for accounts/grading/completion.
+- scripts/stage-request-limit.sh stages a native Vercel firewall fixed-window rule:600 dynamic application requests/minute/IP,429 on excess, explicit portal/login/auth paths, static assets excluded. It does not publish or deploy. docs/request-limits.md covers activation, shared school IP tradeoffs, monitoring, rollback and draft-review requirements.
+- Live activation blocked by invalid local Vercel token and unlinked project. No live firewall, database or hosting changes made. Existing request storm cause remains unconfirmed; no cost reduction measurements claimed.
+- Validation: ESLint, TypeScript, shell syntax and git whitespace checks passed. Firewall staging/publication could not be exercised without valid Vercel credentials; no live rate-limit verification claimed.
