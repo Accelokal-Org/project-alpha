@@ -29,3 +29,17 @@ button:disabled { cursor: not-allowed; }
 @media (prefers-reduced-motion: reduce) {
  a, button, input, select { transition: none; }
 }
+
+/* Low-contrast skeleton sheen; static for reduced-motion users. */
+.skeleton-surface {
+ background-color: #edf0f5;
+ background-image: linear-gradient(100deg, transparent 25%, rgba(255,255,255,.65) 50%, transparent 75%);
+ background-size: 220% 100%;
+}
+@media (prefers-reduced-motion: no-preference) {
+ .skeleton-surface { animation: skeleton-sheen 2.2s ease-in-out infinite; }
+}
+@keyframes skeleton-sheen {
+ from { background-position: 180% 0; }
+ to { background-position: -80% 0; }
+}

@@ -2,6 +2,7 @@
 import {useRef,useState} from "react";
 import {usePathname,useSearchParams} from "next/navigation";
 import Image from "next/image";
+import {NavigationIcon} from "./navigation-icon";
 import {Menu,X,LogOut} from "lucide-react";
 import Link from "@/components/ui/navigation-link";
 import {SubmitButton} from "@/components/ui/submit-button";
@@ -25,7 +26,7 @@ export function PortalChrome({children,portal,access,name,schoolId}:{children:Re
  <div className="md:grid md:grid-cols-[230px_minmax(0,1fr)] min-h-[calc(100vh-64px)]">
   <aside id="portal-navigation" className={`${open?'block':'hidden'} md:block bg-white border-b md:border-b-0 md:border-r border-border md:sticky md:top-16 md:h-[calc(100vh-64px)] overflow-y-auto`}>
    <div className="p-5 pb-3"><p className="text-sm font-semibold text-navy">{title}</p></div>
-   <nav aria-label={`${title} navigation`} className="px-3 pb-4 space-y-5" onClick={e=>{if((e.target as Element).closest('a'))setOpenedAt(null);}}>{groups.map(group=><div key={group.label}><p className="px-3 mb-2 text-[10px] uppercase tracking-wider text-muted font-semibold">{group.label}</p><ul className="space-y-1">{group.links.map(link=><li key={link.href}><Link href={link.href} aria-current={link.active?'page':undefined} className={`block px-3 py-2.5 rounded-md text-sm ${link.active?'bg-purple-50 text-primary font-semibold':'text-muted hover:bg-slate-50 hover:text-navy'}`}>{link.label}</Link></li>)}</ul></div>)}</nav>
+   <nav aria-label={`${title} navigation`} className="px-3 pb-4 space-y-5" onClick={e=>{if((e.target as Element).closest('a'))setOpenedAt(null);}}>{groups.map(group=><div key={group.label}><p className="px-3 mb-2 text-[10px] uppercase tracking-wider text-muted font-semibold">{group.label}</p><ul className="space-y-1">{group.links.map(link=><li key={link.href}><Link href={link.href} aria-current={link.active?'page':undefined} className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm ${link.active?'bg-purple-50 text-primary font-semibold':'text-muted hover:bg-slate-50 hover:text-navy'}`}><NavigationIcon href={link.href}/><span className="min-w-0 leading-5">{link.label}</span></Link></li>)}</ul></div>)}</nav>
    <div className="border-t border-border p-4"><form action={logout}><SubmitButton variant="ghost" pendingLabel="Signing out…"><LogOut size={15}/> Sign out</SubmitButton></form></div>
   </aside>
   <main id="main" className="min-w-0 w-full p-5 lg:px-9 lg:py-8 max-w-[1440px] mx-auto">{children}</main>

@@ -1,2 +1,2 @@
 import { PageLoading } from "@/components/page-loading";
-export default function Loading(){return <PageLoading label="Loading account setup…"/>;}
+export default function Loading(){return <PageLoading label="Loading account setup…" variant="form" frame="content"/>;}

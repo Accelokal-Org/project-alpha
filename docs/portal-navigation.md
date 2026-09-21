@@ -20,3 +20,5 @@ The selected school carries across head-management links when the user manages i
 `components/app-shell.tsx` loads session-derived navigation access on every school page. `components/admin/shell.tsx` requires platform-admin access. `lib/portal-navigation.ts` builds link groups using a minimal access DTO; no full membership records or user ids are passed to the client for navigation. Account metadata supplies display names only.
 
 Unit coverage verifies role-specific links, cumulative roles, school context, nested class links, admin sections and active states. Production browser checks cover protected-route boundaries and existing public flows. Authenticated portal/mobile interaction still requires live verification; no hosted permissions or user records were changed.
+
+Navigation items now include decorative Lucide icons with consistent sizing and inherited active colors. Route loading screens use matching portal header/sidebar geometry and workspace, roster, administration or form placeholders. Skeleton motion respects reduced-motion preferences; placeholders are hidden from assistive technology while a loading status remains available.
