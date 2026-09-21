@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { PageLoading } from "@/components/page-loading";
 import { AdminShell } from "@/components/admin/shell";
 import { GradeCompletion } from "@/components/grades/completion";
 import Link from "@/components/ui/navigation-link";
@@ -7,8 +9,13 @@ import { SchoolSwitcher } from "@/components/admin/school-switcher";
 export const dynamic="force-dynamic";
 export const metadata={title:"Superadmin",robots:{index:false,follow:false}};
 const tabs=["overview","structure","people","subjects","assignments","accounts","attendance","grading","completion","audit"];
-export default async function AdminPage({searchParams}:{searchParams:Promise<{school?:string;tab?:string;year?:string;page?:string;status?:string}>}) {
- const params=await searchParams; const d=await getAdminData(params.school); const tab=tabs.includes(params.tab??"")?params.tab!:"overview";
+type AdminParams={school?:string;tab?:string;year?:string;page?:string;status?:string};
+export default async function AdminPage({searchParams}:{searchParams:Promise<AdminParams>}) {
+ const params=await searchParams;
+ return <Suspense key={JSON.stringify(params)} fallback={<PageLoading variant="admin" label={`Loading ${tabs.includes(params.tab??"")?params.tab:"schools"}…`}/>}><AdminContent params={params}/></Suspense>;
+}
+async function AdminContent({params}:{params:AdminParams}) {
+ const d=await getAdminData(params.school); const tab=tabs.includes(params.tab??"")?params.tab!:"overview";
  return <AdminShell schoolId={d.selected?.id}>
   <div className="flex flex-wrap justify-between gap-4 items-end mb-6"><div><p className="text-xs text-muted mb-2">Platform administration</p><h1 className="text-2xl font-semibold text-navy">{d.selected?.name??"Schools"}</h1><p className="text-sm text-muted mt-2">{d.selected?"Configure the school and connect accounts.":"Manage schools and academic records."}</p></div><div className="flex gap-4 items-center text-xs text-muted"><Link href="/deskonekt/admin/setup" className="rounded-lg bg-primary px-4 py-2 text-white text-sm">Set up school</Link><span>Billing · Planned</span></div></div>
   {d.selected ? <>

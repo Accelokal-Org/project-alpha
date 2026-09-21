@@ -1,4 +1,5 @@
 "use server";
+import { invitationConfigurationError } from "./invitation-config";
 import { createClient as createAuthClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "./access";
@@ -8,10 +9,10 @@ export async function inviteAccount(_state:AdminFormState,form:FormData):Promise
  const {client}=await requireAdmin();
  const parsed=invitationSchema.safeParse({school_id:form.get("school_id"),email:form.get("email"),roles:form.getAll("roles"),profile_id:form.get("profile_id")});
  if(!parsed.success) return {error:parsed.error.issues[0]?.message??"Check the invitation details."};
- const key=process.env.SUPABASE_SERVICE_ROLE_KEY, url=process.env.NEXT_PUBLIC_SUPABASE_URL, site=process.env.APP_URL;
- if(!key||!url||!site) return {error:"Configure APP_URL and the server-only Supabase service-role key before inviting accounts."};
- let origin:string;
- try {const u=new URL(site);if(u.protocol!=="https:" && !(u.protocol==="http:" && ["localhost","127.0.0.1"].includes(u.hostname))) throw new Error();if(u.username||u.password||u.pathname!=="/"||u.search||u.hash) throw new Error();origin=u.origin;} catch {return {error:"APP_URL must be the website origin, such as https://deskonekt.com."};}
+ const configurationError=invitationConfigurationError();
+ if(configurationError) return {error:configurationError};
+ const key=process.env.SUPABASE_SERVICE_ROLE_KEY!.trim(), url=process.env.NEXT_PUBLIC_SUPABASE_URL!.trim();
+ const origin=new URL(process.env.APP_URL!.trim()).origin;
  const {school_id,email,roles,profile_id}=parsed.data;
  const args={target_school:school_id,account_email:email,account_roles:roles,profile:profile_id||undefined};
  const {error:preflight}=await client.rpc("admin_invite_access",args);
