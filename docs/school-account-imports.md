@@ -36,3 +36,5 @@ The recent list covers the latest 1,000 imported rows; each batch supports 100. 
 Local automated tests cover CSV validation, mixed roles, atomic rollback, school isolation, permission revocation, duplicate claims, service-only finalization, rate-limit handling and ambiguous failures. Browser checks verify route protection and the public blank template. Hosted SMTP delivery and authenticated staff/recipient journeys require verification after applying the migration and deployment; no real emails were sent during development.
 
 References: [Supabase custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp), [inviteUserByEmail](https://supabase.com/docs/reference/javascript/auth-admin-inviteuserbyemail), [Auth rate limits](https://supabase.com/docs/guides/auth/rate-limits).
+
+The template link embeds the blank CSV directly, so downloading does not require a server request or JavaScript initialization. `/templates/user-import.csv` remains available as a direct download URL.

@@ -1,3 +1,6 @@
+import {createElement} from "react";
+import {renderToStaticMarkup} from "react-dom/server";
+import {TemplateDownloadLink} from "../../components/account-imports/template-download";
 import {readFile} from "node:fs/promises";
 import {parseImport} from "../../features/account-imports/schema";
 import { expect, test } from "@playwright/test";
@@ -131,4 +134,18 @@ test("user template downloads as an Excel-compatible CSV and matches the importe
  expect(bytes.toString("utf8")).toBe("\uFEFFUsername,Last Name,First Name,Email,Role\r\n");
  // Exercise the downloaded headers with one isolated row, never submitted to the application.
  expect(parseImport(bytes.toString("utf8")+"teacher.one,Cruz,Ana,ana@example.test,TEACHER\r\n")).toEqual([{username:"teacher.one",last_name:"Cruz",first_name:"Ana",email:"ana@example.test",role:"TEACHER"}]);
+});
+
+test("actual template link downloads offline without hydration or an HTTP request",async({page,context})=>{
+ await page.setContent(renderToStaticMarkup(createElement(TemplateDownloadLink)));
+ await context.setOffline(true);
+ try {
+  const downloading=page.waitForEvent("download");
+  await page.getByRole("link",{name:"Download CSV template",exact:true}).click();
+  const download=await downloading;
+  expect(download.suggestedFilename()).toBe("deskonekt-user-import.csv");
+  expect(await download.failure()).toBeNull();
+  const path=await download.path();expect(path).not.toBeNull();
+  expect((await readFile(path!)).toString("utf8")).toBe("\uFEFFUsername,Last Name,First Name,Email,Role\r\n");
+ } finally {await context.setOffline(false);}
 });
