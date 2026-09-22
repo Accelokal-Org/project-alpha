@@ -266,3 +266,9 @@
 - Admin page now wraps its async data/content in a Suspense boundary keyed to query parameters, resetting the admin skeleton on People/other section and school changes rather than relying only on route-level loading.tsx. Shared navigation keeps prefetch disabled and pending-link feedback.
 - Added invitation regressions for missing key and invalid callback origin. No real email, database changes or deployment performed.
 - Validation: lint, standalone TypeScript, production Webpack build and7 invitation unit tests passed. Test harness mocks the server-only marker; production build verifies server/client separation. Authenticated live navigation and hosted invitation delivery were not exercised.
+
+## Invitation callback feedback (2026-09-22)
+- User's supplied email uses Supabase's default verify endpoint and redirects with otp_expired. Did not open or consume the supplied credential URL. Hosted Invite user template must be replaced with existing supabase/templates/invite.html; historical emails remain invalid and need operator-assisted reissue without deleting existing accounts.
+- Added client InvitationLanding to read callback fragment status (not visible to server pages) and show invalid/expired or unsupported legacy-link guidance. Query errors also supported. No provider text/token reflection, automatic verification, role changes or legacy session exchange. Existing explicit token-hash acceptance remains unchanged.
+- Added browser regression for hash/query errors and no acceptance button on errors. Updated invitation operator guide. No hosted settings or emails changed.
+- Validation: lint, production build with TypeScript and5 account-setup unit tests passed. Browser regression initially matched Next's extra route-announcer alert; scoped to the actual invitation alert and reran successfully for fragment/query callbacks. No live token consumed.

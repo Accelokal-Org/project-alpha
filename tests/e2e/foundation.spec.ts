@@ -149,3 +149,12 @@ test("actual template link downloads offline without hydration or an HTTP reques
   expect((await readFile(path!)).toString("utf8")).toBe("\uFEFFUsername,Last Name,First Name,Email,Role\r\n");
  } finally {await context.setOffline(false);}
 });
+
+test("invitation callback reports expired links instead of generic setup instructions",async({page})=>{
+ await page.goto("/auth/accept#error=access_denied&error_code=otp_expired&error_description=untrusted-description");
+ await expect(page.getByRole("alert").filter({hasText:"This invitation link"})).toContainText("invalid or expired");
+ await expect(page.getByText("untrusted-description")).toHaveCount(0);
+ await expect(page.getByRole("button",{name:/Accept invitation/i})).toHaveCount(0);
+ await page.goto("/auth/accept?error_code=otp_expired");
+ await expect(page.getByRole("alert").filter({hasText:"This invitation link"})).toContainText("invalid or expired");
+});

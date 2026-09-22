@@ -34,3 +34,9 @@ The service-role client is limited to the authorized invitation Auth API; academ
 No live invitation has been sent during implementation. Hosted migration, environment variables, email template and SMTP settings must be configured before the first real invitation.
 
 For school-head bulk creation from CSV, see [school account imports](school-account-imports.md). Existing single-account invitations and account linking remain available.
+
+## Wrong email link or otp_expired
+
+An email link pointing at Supabase `/auth/v1/verify` uses the default verification flow, not this app's confirmation form. Replace the hosted Invite user email with `supabase/templates/invite.html`. Its link must be `{{ .RedirectTo }}?token_hash={{ .TokenHash }}`. This setting is saved in Supabase, not deployed by Vercel. Existing emails do not change when the template is updated.
+
+An `otp_expired` callback means the verification link was rejected as invalid/expired (including already-used links); the URL alone cannot distinguish expiry from email-scanner consumption. The app now shows this error from URL fragments as well as query parameters. It never echoes provider error descriptions or exchanges legacy fragment tokens. Arrange a fresh invitation through operator assistance for the existing account; do not delete its profile/roles or repeatedly create it again. Opening the new token-hash landing page does not verify the token until the recipient presses Accept invitation.
